@@ -50,3 +50,7 @@ The suite covers the physics engine, the UI, the executable, and (when WSL is se
 ```
 .\build_exe.ps1
 ```
+
+## License
+
+MIT; see [LICENSE](LICENSE). PYTHIA, MadGraph5_aMC@NLO, Delphes, Rivet and the other tools that research mode installs keep their own licenses.

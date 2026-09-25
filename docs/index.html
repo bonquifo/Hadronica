@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMLab Benchmark Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&display=swap">
+<style>
+:root {
+  --ground: #f5f7fa; --panel: #ffffff; --ink: #17212d; --muted: #5a6677; --rule: #d9dfe7; --soft: #eef2f7;
+  --smlab: #2d6cdf; --best: #0f7a5c; --hw: #b8691f; --sh: #7b57a8; --warn: #9a5b00; --good-bg: #e3f3ec;
+  --grid: #d3dae4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e131b; --panel: #151c27; --ink: #e5eaf1; --muted: #9aa6b6; --rule: #2a3444; --soft: #1b2431;
+    --smlab: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e131b; --panel: #151c27; --ink: #e5eaf1; --muted: #9aa6b6; --rule: #2a3444; --soft: #1b2431;
+  --smlab: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
+}
+body { background: var(--ground); color: var(--ink); font: 16px/1.6 "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+.page { max-width: 920px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 40px; }
+h1, h2 { font-family: "Source Serif 4", Georgia, serif; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 650; line-height: 1.15; }
+h2 { font-size: 25px; font-weight: 650; line-height: 1.25; }
+h3 { font-size: 15px; font-weight: 600; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 500 12px/1 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+header { display: grid; gap: 14px; }
+.lede { font-size: 18px; color: var(--ink); }
+section { display: grid; gap: 16px; }
+.findings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 860px) { .findings { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px) { .findings { grid-template-columns: 1fr; } }
+.finding { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; align-content: start; }
+.finding b { font: 500 26px/1.1 "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.finding.pos b { color: var(--best); } .finding.neg b { color: var(--hw); }
+.scroll { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+thead th { font: 500 12px/1.3 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--soft); }
+tbody tr:last-child > * { border-bottom: 0; }
+td.num, th.num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+td.win { font-weight: 500; color: var(--smlab); }
+td.best { color: var(--best); font-weight: 500; }
+td.good { background: var(--good-bg); }
+td.muted { color: var(--muted); }
+.bench { display: block; font-weight: 600; }
+.sub { display: block; font: 400 12px/1.4 "IBM Plex Sans", system-ui, sans-serif; color: var(--muted); text-align: inherit; white-space: normal; }
+td.num .sub { text-align: right; }
+.note { font-size: 14px; color: var(--muted); }
+.notes { display: grid; gap: 10px; font-size: 14px; }
+.notes p { max-width: none; }
+sup { color: var(--warn); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.chart { padding: 14px 10px 6px; }
+.chart svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.chart text { fill: var(--muted); font: 12px "IBM Plex Mono", ui-monospace, monospace; }
+.chart .rowlabel { fill: var(--ink); font: 500 13px "IBM Plex Sans", system-ui, sans-serif; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+a { color: var(--smlab); }
+code { font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<main class="page">
+<header>
+  <span class="eyebrow">Standard Model Collision Laboratory · Validation report · September 2026</span>
+  <h1>How SMLab compares with MadGraph, PYTHIA, Herwig and Sherpa</h1>
+  <p class="lede">SMLab was tested against the established particle-physics event generators on the same inputs and the same
+  published measurements. Its own physics engine reproduces MadGraph to 0.13&nbsp;%, its PYTHIA mode is identical to PYTHIA run
+  directly, and against real LEP and LHC data it matches or beats Herwig&nbsp;7.3 and Sherpa&nbsp;3.0 on five of six benchmarks.
+  Soft (minimum-bias) collisions are where it falls behind.</p>
+</header>
+
+<section aria-labelledby="summary">
+  <h2 id="summary">Summary</h2>
+  <div class="findings">
+    <div class="finding pos"><span class="eyebrow">Own engine vs MadGraph</span><b>≤ 0.13&nbsp;%</b>
+      <span class="note">largest difference over 25 cross sections, 11 processes, same conventions</span></div>
+    <div class="finding pos"><span class="eyebrow">PYTHIA mode vs PYTHIA</span><b>identical</b>
+      <span class="note">bit-for-bit the same Rivet histograms for the same events</span></div>
+    <div class="finding pos"><span class="eyebrow">Best on data</span><b>1.82</b>
+      <span class="note">χ²/ndf on CMS top-pair data with NLO + MadSpin + tune (Herwig 15.6, Sherpa 15.4)</span></div>
+    <div class="finding neg"><span class="eyebrow">Weakest area</span><b>36.3</b>
+      <span class="note">χ²/ndf on ATLAS minimum bias, against Herwig's 7.1</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="data">
+  <h2 id="data">Against measured data</h2>
+  <p>Each generator ran SMLab's six validation benchmarks, analysed with the same Rivet analyses and scored with the same code.
+  The score is the median χ²/ndf over each measurement's distributions: 1 means agreement within the uncertainties, and lower is
+  better. The first three columns are like for like: leading order with a parton shower (Sherpa also merges extra jets). The last
+  column is SMLab's best mode, which uses next-to-leading-order samples.</p>
+  <div class="legend" aria-hidden="true">
+    <span><i class="dot" style="background:var(--smlab)"></i>SMLab LO (PYTHIA 8)</span>
+    <span><i class="dot" style="background:var(--hw)"></i>Herwig 7.3</span>
+    <span><i class="dot" style="background:var(--sh)"></i>Sherpa 3.0</span>
+    <span><i class="dot" style="background:var(--best)"></i>SMLab best (NLO)</span>
+    <span><i class="dot" style="border:2px solid var(--hw);background:transparent;width:9px;height:9px"></i>unconfirmed</span>
+  </div>
+  <div class="scroll chart"><svg id="chart" role="img" aria-label="Median chi-squared per degree of freedom for each benchmark and generator, logarithmic scale"></svg></div>
+  <div class="scroll">
+  <table>
+    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">SMLab LO</th><th scope="col" class="num">Herwig 7.3</th>
+    <th scope="col" class="num">Sherpa 3.0</th><th scope="col" class="num">SMLab best</th></tr></thead>
+    <tbody>
+<tr><th scope="row"><span class="bench">LEP event shapes</span><span class="sub">ALEPH, e⁺e⁻ → hadrons at 91.2 GeV; <a href="https://inspirehep.net/literature/428072">Phys. Rept. 294 (1998) 1</a></span></th>
+<td class="num win">2.48</td><td class="num">19.48 <sup>†</sup></td><td class="num">4.57</td>
+<td class="num best">2.48<span class="sub">same as LO</span></td></tr>
+<tr><th scope="row"><span class="bench">Minimum bias</span><span class="sub">ATLAS, charged particles at 13 TeV; <a href="https://inspirehep.net/literature/1419652">Phys. Lett. B 758 (2016) 67</a></span></th>
+<td class="num">36.33</td><td class="num win">7.10</td><td class="num muted">n/c <sup>‡</sup></td>
+<td class="num best">36.33<span class="sub">same as LO</span></td></tr>
+<tr><th scope="row"><span class="bench">Z transverse momentum</span><span class="sub">ATLAS, Z → ℓℓ at 13 TeV; <a href="https://inspirehep.net/literature/1768911">Eur. Phys. J. C 80 (2020) 616</a></span></th>
+<td class="num win">4.23</td><td class="num">4.62</td><td class="num">9.45</td>
+<td class="num best">1.65<span class="sub">NLO FxFx + SMLab tune</span></td></tr>
+<tr><th scope="row"><span class="bench">Top pairs, lepton + jets</span><span class="sub">CMS, event variables at 13 TeV; <a href="https://inspirehep.net/literature/1662081">JHEP 06 (2018) 002</a></span></th>
+<td class="num win">7.92</td><td class="num">15.59</td><td class="num">15.44</td>
+<td class="num best">1.82<span class="sub">NLO + MadSpin + tune</span></td></tr>
+<tr><th scope="row"><span class="bench">Top pairs, dilepton</span><span class="sub">ATLAS, eμ channel at 13 TeV; <a href="https://inspirehep.net/literature/1759875">Eur. Phys. J. C 80 (2020) 528</a></span></th>
+<td class="num win">11.34</td><td class="num">22.19</td><td class="num">15.53</td>
+<td class="num best">0.97<span class="sub">NLO + MadSpin</span></td></tr>
+<tr><th scope="row"><span class="bench">Inclusive jets</span><span class="sub">CMS, jet cross section at 13 TeV; <a href="https://inspirehep.net/literature/1459051">Eur. Phys. J. C 76 (2016) 451</a></span></th>
+<td class="num win">5.68</td><td class="num">8.55</td><td class="num">6.27</td>
+<td class="num best">5.68<span class="sub">same as LO</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="notes">
+    <p><sup>†</sup> <b>Herwig on LEP is unconfirmed.</b> Its charged multiplicity is 19.48 against ALEPH's 20.91 ± 0.22 (Phys. Rept. 294 (1998) 1). Herwig's
+    authors document that its tune cannot describe LEP spectra and multiplicities well at the same time
+    (D. Reichelt, P. Richardson, A. Siodmok, Eur. Phys. J. C 77 (2017) 876,
+    <a href="https://arxiv.org/abs/1708.01491">arXiv:1708.01491</a>), but its event shapes are surprisingly poor for a
+    generator tuned to LEP. This Herwig build needed nine workarounds for Ubuntu 26.04's compilers and tools, so a build
+    problem cannot be ruled out.</p>
+    <p><sup>‡</sup> <b>Sherpa on minimum bias is not comparable.</b> Sherpa's official minimum-bias example covers
+    non-diffractive collisions only, while the ATLAS measurement includes diffraction. It predicts
+    62&nbsp;%
+    too many particles per event, which says more about the setup than about Sherpa.</p>
+    <p><b>Limited by simulation statistics.</b> In the dilepton top-pair and Z transverse-momentum measurements the data are
+    more precise than 60&nbsp;000 to 150&nbsp;000 simulated events. There a χ²/ndf near 1 means consistent within the
+    simulation's statistics rather than agreement at the data's precision; large values still mean real disagreement.</p>
+    <p><b>Fairness fixes.</b> Herwig's LEP setup radiated photons off the incoming beams, which the data are corrected for;
+    it now runs without initial-state radiation (checked: no beam photons in 300 events). Sherpa's default left K⁰<sub>S</sub>
+    and Λ undecayed, which the LEP measurement counts; its LEP run now decays particles with cτ &lt; 300&nbsp;mm, the LEP
+    convention. Herwig and Sherpa ran at leading order because their NLO modes need OpenLoops, which is not installed.</p>
+  </div>
+</section>
+
+<section aria-labelledby="madgraph">
+  <h2 id="madgraph">SMLab's own engine against MadGraph</h2>
+  <p>SMLab's built-in engine computes Born cross sections from its own formulas. MadGraph5_aMC@NLO is the standard for
+  tree-level calculations. With SMLab's couplings switched to MadGraph's conventions (α = 1/132.04, on-shell mixing angle,
+  no QCD factor) every cross section agrees within MadGraph's precision, which checks the formulas themselves. As shipped,
+  SMLab uses a running α(s), the effective mixing angle and a QCD factor for quarks; those choices move cross sections by a
+  few percent and are what reproduce LEP's measured asymmetries.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th scope="col">Process</th><th scope="col" class="num">√s (GeV)</th><th scope="col" class="num">MadGraph σ (pb)</th>
+    <th scope="col" class="num">SMLab / MG, same scheme</th><th scope="col" class="num">SMLab / MG, as shipped</th></tr></thead>
+    <tbody>
+<tr><td>e⁺e⁻ → μ⁺μ⁻</td><td class="num">20.0</td><td class="num">233.8</td>
+<td class="num good">1.0003</td><td class="num">1.0143</td></tr>
+<tr><td>e⁺e⁻ → μ⁺μ⁻</td><td class="num">91.2</td><td class="num">2006</td>
+<td class="num good">1.0000</td><td class="num">0.9887</td></tr>
+<tr><td>e⁺e⁻ → μ⁺μ⁻</td><td class="num">250.0</td><td class="num">1.775</td>
+<td class="num good">1.0001</td><td class="num">1.0556</td></tr>
+<tr><td>e⁺e⁻ → μ⁺μ⁻</td><td class="num">500.0</td><td class="num">0.4303</td>
+<td class="num good">1.0005</td><td class="num">1.0733</td></tr>
+<tr><td>e⁺e⁻ → τ⁺τ⁻</td><td class="num">91.2</td><td class="num">2002</td>
+<td class="num good">0.9997</td><td class="num">0.9884</td></tr>
+<tr><td>e⁺e⁻ → τ⁺τ⁻</td><td class="num">250.0</td><td class="num">1.774</td>
+<td class="num good">1.0006</td><td class="num">1.0561</td></tr>
+<tr><td>e⁺e⁻ → uū</td><td class="num">91.2</td><td class="num">6901</td>
+<td class="num good">0.9998</td><td class="num">1.0162</td></tr>
+<tr><td>e⁺e⁻ → uū</td><td class="num">250.0</td><td class="num">3.016</td>
+<td class="num good">0.9996</td><td class="num">1.0639</td></tr>
+<tr><td>e⁺e⁻ → dd̄</td><td class="num">91.2</td><td class="num">8840</td>
+<td class="num good">0.9998</td><td class="num">1.0208</td></tr>
+<tr><td>e⁺e⁻ → dd̄</td><td class="num">250.0</td><td class="num">1.764</td>
+<td class="num good">0.9988</td><td class="num">1.0260</td></tr>
+<tr><td>e⁺e⁻ → bb̄</td><td class="num">91.2</td><td class="num">8765</td>
+<td class="num good">0.9998</td><td class="num">1.0207</td></tr>
+<tr><td>e⁺e⁻ → bb̄</td><td class="num">250.0</td><td class="num">1.763</td>
+<td class="num good">0.9987</td><td class="num">1.0258</td></tr>
+<tr><td>e⁺e⁻ → tt̄</td><td class="num">365.0</td><td class="num">0.4972</td>
+<td class="num good">0.9997</td><td class="num">1.0859</td></tr>
+<tr><td>e⁺e⁻ → tt̄</td><td class="num">500.0</td><td class="num">0.5515</td>
+<td class="num good">0.9995</td><td class="num">1.0868</td></tr>
+<tr><td>e⁺e⁻ → ν_μν̄_μ</td><td class="num">91.2</td><td class="num">3944</td>
+<td class="num good">1.0001</td><td class="num">0.9943</td></tr>
+<tr><td>e⁺e⁻ → ν_μν̄_μ</td><td class="num">250.0</td><td class="num">0.5229</td>
+<td class="num good">0.9991</td><td class="num">0.9932</td></tr>
+<tr><td>e⁺e⁻ → ν_eν̄_e</td><td class="num">91.2</td><td class="num">3959</td>
+<td class="num good">1.0001</td><td class="num">0.9942</td></tr>
+<tr><td>e⁺e⁻ → ν_eν̄_e</td><td class="num">250.0</td><td class="num">42.72</td>
+<td class="num good">1.0003</td><td class="num">0.9961</td></tr>
+<tr><td>e⁺e⁻ → ZH</td><td class="num">240.0</td><td class="num">0.2393</td>
+<td class="num good">1.0001</td><td class="num">0.9942</td></tr>
+<tr><td>e⁺e⁻ → ZH</td><td class="num">365.0</td><td class="num">0.1171</td>
+<td class="num good">0.9999</td><td class="num">0.9941</td></tr>
+<tr><td>e⁺e⁻ → ZH</td><td class="num">500.0</td><td class="num">0.05715</td>
+<td class="num good">0.9997</td><td class="num">0.9938</td></tr>
+<tr><td>Bhabha (QED)</td><td class="num">91.2</td><td class="num">3858</td>
+<td class="num good">1.0008</td><td class="num">1.0008</td></tr>
+<tr><td>Bhabha (QED)</td><td class="num">250.0</td><td class="num">513.3</td>
+<td class="num good">1.0007</td><td class="num">1.0007</td></tr>
+<tr><td>e⁺e⁻ → γγ (QED)</td><td class="num">91.2</td><td class="num">60.91</td>
+<td class="num good">1.0000</td><td class="num">1.0000</td></tr>
+<tr><td>e⁺e⁻ → γγ (QED)</td><td class="num">250.0</td><td class="num">8.103</td>
+<td class="num good">1.0001</td><td class="num">1.0001</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="cols">
+    <div class="scroll">
+    <table>
+      <thead><tr><th scope="col" class="num">√s (GeV)</th><th scope="col" class="num">MadGraph A<sub>FB</sub></th>
+      <th scope="col" class="num">SMLab, same scheme</th><th scope="col" class="num">SMLab, shipped</th></tr></thead>
+      <tbody>
+<tr><td class="num">20.0</td><td class="num">-0.0175 ± 0.0071</td>
+<td class="num">-0.0273</td><td class="num">-0.0271</td></tr>
+<tr><td class="num">91.2</td><td class="num">0.0380 ± 0.0071</td>
+<td class="num">0.0331</td><td class="num">0.0161</td></tr>
+<tr><td class="num">250.0</td><td class="num">0.5315 ± 0.0060</td>
+<td class="num">0.5301</td><td class="num">0.5175</td></tr>
+<tr><td class="num">500.0</td><td class="num">0.4839 ± 0.0062</td>
+<td class="num">0.4897</td><td class="num">0.4743</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Forward–backward asymmetry of e⁺e⁻ → μ⁺μ⁻ (MadGraph from 20&nbsp;000 events). At the Z pole, SMLab as shipped
+    gives 0.0161, close to LEP's measured 0.0169 ± 0.0013 (<a href="https://pdg.lbl.gov/2026/reviews/rpp2026-rev-standard-model.pdf">PDG 2026
+    Electroweak review</a>, Table 10.3); MadGraph's tree-level scheme gives about twice that.</p>
+  </div>
+</section>
+
+<section aria-labelledby="pythia">
+  <h2 id="pythia">SMLab's PYTHIA mode against PYTHIA itself</h2>
+  <p>A stand-alone C++ program ran PYTHIA with exactly the settings SMLab uses, handing events to Rivet through PYTHIA's own
+  converter and skipping every SMLab layer. For the same events, both routes produce bit-identical histograms. With independent
+  random seeds they agree within statistics; the minimum-bias figure reflects strongly correlated bins, since a control
+  comparing PYTHIA with itself gives 1.14 on the same measure.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">SMLab vs data</th><th scope="col" class="num">PYTHIA direct vs data</th>
+    <th scope="col" class="num">SMLab vs PYTHIA</th></tr></thead>
+    <tbody>
+<tr><td>LEP event shapes</td><td class="num">2.48</td><td class="num">2.47</td>
+<td class="num">1.02</td></tr>
+<tr><td>Minimum bias</td><td class="num">36.33</td><td class="num">36.68</td>
+<td class="num">1.74</td></tr>
+<tr><td>Z transverse momentum</td><td class="num">4.23</td><td class="num">4.09</td>
+<td class="num">1.00</td></tr>
+<tr><td>Top pairs, lepton + jets</td><td class="num">7.92</td><td class="num">8.67</td>
+<td class="num">0.70</td></tr>
+<tr><td>Inclusive jets</td><td class="num">5.68</td><td class="num">6.33</td>
+<td class="num">1.01</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="method">
+  <h2 id="method">Method</h2>
+  <div class="notes">
+    <p>All runs used the same beams, energies and generation cuts as SMLab's validation: 60&nbsp;000 to 150&nbsp;000 events per
+    benchmark, generated in parallel chunks with independent seeds and merged with <code>rivet-merge</code>. Herwig 7.3.0 was
+    built from source with herwig-bootstrap; Sherpa 3.0.0 came from conda-forge; both used their authors' example inputs,
+    changing only beams, energy, cuts and output. Rivet 4.1.4 supplied the analyses and the published reference data.</p>
+    <p>The scripts are in <a href="https://github.com/bonquifo/SMLab/tree/main/hep/compare"><code>hep/compare/</code></a> of the
+    <a href="https://github.com/bonquifo/SMLab">SMLab repository</a>: <code>builtin_vs_madgraph.py</code>,
+    <code>pythia_direct.py</code>, <code>other_generators.py</code> and <code>summary.py</code>. Every number on this page is
+    read from their saved outputs, and SMLab's test suite checks the numbers quoted in its audit against the same files.</p>
+    <p>Generators: MadGraph5_aMC@NLO, J. Alwall et al., JHEP 07 (2014) 079,
+    <a href="https://arxiv.org/abs/1405.0301">arXiv:1405.0301</a>; PYTHIA 8.3, C. Bierlich et al., SciPost Phys. Codebases 8 (2022),
+    <a href="https://arxiv.org/abs/2203.11601">arXiv:2203.11601</a>; Herwig 7.3, G. Bewick et al., Eur. Phys. J. C 84 (2024) 1053,
+    <a href="https://arxiv.org/abs/2312.05175">arXiv:2312.05175</a>; Sherpa 3, E. Bothmann et al., JHEP 12 (2024) 156,
+    <a href="https://arxiv.org/abs/2410.22148">arXiv:2410.22148</a>. Analysis: Rivet 4, C. Bierlich et al., SciPost Phys. Codebases 36 (2024),
+    <a href="https://arxiv.org/abs/2404.15984">arXiv:2404.15984</a>; reference data from
+    <a href="https://www.hepdata.net/">HEPData</a> (E. Maguire, L. Heinrich, G. Watt, J. Phys. Conf. Ser. 898 (2017) 102006).</p>
+    <p>Sources: D. Reichelt, P. Richardson, A. Siodmok, <a href="https://arxiv.org/abs/1708.01491">Improving the
+    Simulation of Quark and Gluon Jets with Herwig 7</a>, Eur. Phys. J. C 77 (2017) 876;
+    <a href="https://mcplots.cern.ch/?query=plots%2C%2Czhad%2CpToutSph%2CHerwig.Main">MCPlots, Z → hadrons, Herwig</a>.</p>
+  </div>
+</section>
+</main>
+
+<script>
+(function () {
+  const DATA = {"rows": [{"key": "lep_z_hadrons", "label": "LEP event shapes", "values": {"smlab_lo": 2.4794424199114133, "herwig": 19.47727592597582, "sherpa": 4.565165591301258, "smlab_best": 2.4794424199114133}, "hollow": ["herwig"]}, {"key": "lhc_minbias", "label": "Minimum bias", "values": {"smlab_lo": 36.332546481360716, "herwig": 7.1023161948133025, "sherpa": null, "smlab_best": 36.332546481360716}, "hollow": []}, {"key": "lhc_z_pt", "label": "Z transverse momentum", "values": {"smlab_lo": 4.2312352375335855, "herwig": 4.61809287668402, "sherpa": 9.446202484498265, "smlab_best": 1.650659249721445}, "hollow": []}, {"key": "lhc_ttbar", "label": "Top pairs, lepton + jets", "values": {"smlab_lo": 7.919305116212754, "herwig": 15.590573482873326, "sherpa": 15.438452186418797, "smlab_best": 1.8193629198353407}, "hollow": []}, {"key": "lhc_ttbar_dilep", "label": "Top pairs, dilepton", "values": {"smlab_lo": 11.343541293666526, "herwig": 22.19264140425011, "sherpa": 15.525731873488372, "smlab_best": 0.9700795978751917}, "hollow": []}, {"key": "lhc_jets", "label": "Inclusive jets", "values": {"smlab_lo": 5.680577447061722, "herwig": 8.548912443832116, "sherpa": 6.2655227540757785, "smlab_best": 5.680577447061722}, "hollow": []}], "series": [{"field": "smlab_lo", "label": "SMLab LO", "cls": "lo"}, {"field": "herwig", "label": "Herwig 7.3", "cls": "hw"}, {"field": "sherpa", "label": "Sherpa 3.0", "cls": "sh"}, {"field": "smlab_best", "label": "SMLab best", "cls": "best"}]};
+  const svg = document.getElementById("chart");
+  const ns = "http://www.w3.org/2000/svg";
+  const W = 760, left = 200, right = 24, top = 30, rowH = 46, H = top + DATA.rows.length * rowH + 30;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const lo = Math.log10(0.5), hi = Math.log10(40);
+  const x = v => left + (Math.log10(Math.min(Math.max(v, 0.5), 40)) - lo) / (hi - lo) * (W - left - right);
+  const el = (name, attrs, text) => {
+    const e = document.createElementNS(ns, name);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    svg.appendChild(e); return e;
+  };
+  const css = getComputedStyle(document.documentElement);
+  const color = name => css.getPropertyValue(name).trim();
+  for (const t of [0.5, 1, 2, 5, 10, 20, 40]) {
+    el("line", { x1: x(t), x2: x(t), y1: top - 8, y2: H - 26, stroke: color(t === 1 ? "--muted" : "--grid"),
+      "stroke-width": t === 1 ? 1.4 : 1, "stroke-dasharray": t === 1 ? "4 3" : "" });
+    el("text", { x: x(t), y: H - 10, "text-anchor": "middle" }, String(t));
+  }
+  el("text", { x: x(1) + 6, y: top - 14 }, "χ²/ndf = 1: agreement");
+  const colors = { smlab_lo: "--smlab", herwig: "--hw", sherpa: "--sh", smlab_best: "--best" };
+  const offsets = { smlab_lo: -9, herwig: -3, sherpa: 3, smlab_best: 9 };
+  DATA.rows.forEach((row, i) => {
+    const y = top + i * rowH + rowH / 2;
+    el("text", { x: 12, y: y + 4, class: "rowlabel" }, row.label);
+    el("line", { x1: left, x2: W - right, y1: y, y2: y, stroke: color("--grid"), "stroke-width": 1 });
+    for (const s of DATA.series) {
+      const v = row.values[s.field];
+      if (v == null) continue;
+      const cx = x(v), cy = y + offsets[s.field];
+      const hollow = row.hollow.includes(s.field);
+      const c = el("circle", { cx, cy, r: hollow ? 5 : 6, fill: hollow ? color("--panel") : color(colors[s.field]),
+        stroke: hollow ? color(colors[s.field]) : color("--panel"), "stroke-width": hollow ? 2 : 1.5 });
+      const tip = document.createElementNS(ns, "title");
+      tip.textContent = `${s.label}: ${v.toFixed(2)}${hollow ? " (unconfirmed)" : ""}`; c.appendChild(tip);
+    }
+  });
+})();
+</script>

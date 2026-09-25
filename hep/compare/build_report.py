@@ -1,4 +1,4 @@
-"""Build the comparison report page from SMLab's saved comparison outputs (no hand-copied numbers).
+"""Build the comparison report page from Hadronica's saved comparison outputs (no hand-copied numbers).
 
     python hep/compare/build_report.py [output.html]
 
@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(ROOT, "hep", "compare"))
 import summary  # noqa: E402
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "docs", "index.html")
-REPO = "https://github.com/bonquifo/SMLab"
+REPO = "https://github.com/bonquifo/Hadronica"
 
 mg = json.load(open(os.path.join(ROOT, "hep", "compare", "builtin_vs_madgraph.json"), encoding="utf-8"))
 direct = json.load(open(os.path.join(ROOT, "hep", "compare", "pythia_direct.json"), encoding="utf-8"))
@@ -38,13 +38,13 @@ REFS = {
     "lhc_ttbar_dilep": ("Eur. Phys. J. C 80 (2020) 528", 1759875),
     "lhc_jets": ("Eur. Phys. J. C 76 (2016) 451", 1459051),
 }
-BEST = {"lo": "same as LO", "fxfx_tuned": "NLO FxFx + SMLab tune", "ms_tuned": "NLO + MadSpin + tune",
+BEST = {"lo": "same as LO", "fxfx_tuned": "NLO FxFx + Hadronica tune", "ms_tuned": "NLO + MadSpin + tune",
         "nlo_ms": "NLO + MadSpin"}
 FLAGS = {("lep_z_hadrons", "herwig"): "unconfirmed", ("lhc_minbias", "sherpa"): "not comparable"}
 
 # Chart rows: (key, {series: value or None}).
-series = [("smlab_lo", "SMLab LO", "lo"), ("herwig", "Herwig 7.3", "hw"), ("sherpa", "Sherpa 3.0", "sh"),
-          ("smlab_best", "SMLab best", "best")]
+series = [("smlab_lo", "Hadronica LO", "lo"), ("herwig", "Herwig 7.3", "hw"), ("sherpa", "Sherpa 3.0", "sh"),
+          ("smlab_best", "Hadronica best", "best")]
 chart_rows = []
 for key, row in table.items():
     values = {}
@@ -103,7 +103,7 @@ page = f"""<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SMLab Benchmark Comparison</title>
+<title>Hadronica Benchmark Comparison</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&display=swap">
 <style>
@@ -173,8 +173,8 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
 <main class="page">
 <header>
   <span class="eyebrow">Standard Model Collision Laboratory · Validation report · September 2026</span>
-  <h1>How SMLab compares with MadGraph, PYTHIA, Herwig and Sherpa</h1>
-  <p class="lede">SMLab was tested against the established particle-physics event generators on the same inputs and the same
+  <h1>How Hadronica compares with MadGraph, PYTHIA, Herwig and Sherpa</h1>
+  <p class="lede">Hadronica was tested against the established particle-physics event generators on the same inputs and the same
   published measurements. Its own physics engine reproduces MadGraph to 0.13&nbsp;%, its PYTHIA mode is identical to PYTHIA run
   directly, and against real LEP and LHC data it matches or beats Herwig&nbsp;7.3 and Sherpa&nbsp;3.0 on five of six benchmarks.
   Soft (minimum-bias) collisions are where it falls behind.</p>
@@ -196,22 +196,22 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
 
 <section aria-labelledby="data">
   <h2 id="data">Against measured data</h2>
-  <p>Each generator ran SMLab's six validation benchmarks, analysed with the same Rivet analyses and scored with the same code.
+  <p>Each generator ran Hadronica's six validation benchmarks, analysed with the same Rivet analyses and scored with the same code.
   The score is the median χ²/ndf over each measurement's distributions: 1 means agreement within the uncertainties, and lower is
   better. The first three columns are like for like: leading order with a parton shower (Sherpa also merges extra jets). The last
-  column is SMLab's best mode, which uses next-to-leading-order samples.</p>
+  column is Hadronica's best mode, which uses next-to-leading-order samples.</p>
   <div class="legend" aria-hidden="true">
-    <span><i class="dot" style="background:var(--smlab)"></i>SMLab LO (PYTHIA 8)</span>
+    <span><i class="dot" style="background:var(--smlab)"></i>Hadronica LO (PYTHIA 8)</span>
     <span><i class="dot" style="background:var(--hw)"></i>Herwig 7.3</span>
     <span><i class="dot" style="background:var(--sh)"></i>Sherpa 3.0</span>
-    <span><i class="dot" style="background:var(--best)"></i>SMLab best (NLO)</span>
+    <span><i class="dot" style="background:var(--best)"></i>Hadronica best (NLO)</span>
     <span><i class="dot" style="border:2px solid var(--hw);background:transparent;width:9px;height:9px"></i>unconfirmed</span>
   </div>
   <div class="scroll chart"><svg id="chart" role="img" aria-label="Median chi-squared per degree of freedom for each benchmark and generator, logarithmic scale"></svg></div>
   <div class="scroll">
   <table>
-    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">SMLab LO</th><th scope="col" class="num">Herwig 7.3</th>
-    <th scope="col" class="num">Sherpa 3.0</th><th scope="col" class="num">SMLab best</th></tr></thead>
+    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">Hadronica LO</th><th scope="col" class="num">Herwig 7.3</th>
+    <th scope="col" class="num">Sherpa 3.0</th><th scope="col" class="num">Hadronica best</th></tr></thead>
     <tbody>
 {result_rows}
     </tbody>
@@ -239,16 +239,16 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
 </section>
 
 <section aria-labelledby="madgraph">
-  <h2 id="madgraph">SMLab's own engine against MadGraph</h2>
-  <p>SMLab's built-in engine computes Born cross sections from its own formulas. MadGraph5_aMC@NLO is the standard for
-  tree-level calculations. With SMLab's couplings switched to MadGraph's conventions (α = 1/132.04, on-shell mixing angle,
+  <h2 id="madgraph">Hadronica's own engine against MadGraph</h2>
+  <p>Hadronica's built-in engine computes Born cross sections from its own formulas. MadGraph5_aMC@NLO is the standard for
+  tree-level calculations. With Hadronica's couplings switched to MadGraph's conventions (α = 1/132.04, on-shell mixing angle,
   no QCD factor) every cross section agrees within MadGraph's precision, which checks the formulas themselves. As shipped,
-  SMLab uses a running α(s), the effective mixing angle and a QCD factor for quarks; those choices move cross sections by a
+  Hadronica uses a running α(s), the effective mixing angle and a QCD factor for quarks; those choices move cross sections by a
   few percent and are what reproduce LEP's measured asymmetries.</p>
   <div class="scroll">
   <table>
     <thead><tr><th scope="col">Process</th><th scope="col" class="num">√s (GeV)</th><th scope="col" class="num">MadGraph σ (pb)</th>
-    <th scope="col" class="num">SMLab / MG, same scheme</th><th scope="col" class="num">SMLab / MG, as shipped</th></tr></thead>
+    <th scope="col" class="num">Hadronica / MG, same scheme</th><th scope="col" class="num">Hadronica / MG, as shipped</th></tr></thead>
     <tbody>
 {mg_rows}
     </tbody>
@@ -258,28 +258,28 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
     <div class="scroll">
     <table>
       <thead><tr><th scope="col" class="num">√s (GeV)</th><th scope="col" class="num">MadGraph A<sub>FB</sub></th>
-      <th scope="col" class="num">SMLab, same scheme</th><th scope="col" class="num">SMLab, shipped</th></tr></thead>
+      <th scope="col" class="num">Hadronica, same scheme</th><th scope="col" class="num">Hadronica, shipped</th></tr></thead>
       <tbody>
 {afb_rows}
       </tbody>
     </table>
     </div>
-    <p class="note">Forward–backward asymmetry of e⁺e⁻ → μ⁺μ⁻ (MadGraph from 20&nbsp;000 events). At the Z pole, SMLab as shipped
+    <p class="note">Forward–backward asymmetry of e⁺e⁻ → μ⁺μ⁻ (MadGraph from 20&nbsp;000 events). At the Z pole, Hadronica as shipped
     gives 0.0161, close to LEP's measured 0.0169 ± 0.0013 (<a href="https://pdg.lbl.gov/2026/reviews/rpp2026-rev-standard-model.pdf">PDG 2026
     Electroweak review</a>, Table 10.3); MadGraph's tree-level scheme gives about twice that.</p>
   </div>
 </section>
 
 <section aria-labelledby="pythia">
-  <h2 id="pythia">SMLab's PYTHIA mode against PYTHIA itself</h2>
-  <p>A stand-alone C++ program ran PYTHIA with exactly the settings SMLab uses, handing events to Rivet through PYTHIA's own
-  converter and skipping every SMLab layer. For the same events, both routes produce bit-identical histograms. With independent
+  <h2 id="pythia">Hadronica's PYTHIA mode against PYTHIA itself</h2>
+  <p>A stand-alone C++ program ran PYTHIA with exactly the settings Hadronica uses, handing events to Rivet through PYTHIA's own
+  converter and skipping every Hadronica layer. For the same events, both routes produce bit-identical histograms. With independent
   random seeds they agree within statistics; the minimum-bias figure reflects strongly correlated bins, since a control
   comparing PYTHIA with itself gives 1.14 on the same measure.</p>
   <div class="scroll">
   <table>
-    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">SMLab vs data</th><th scope="col" class="num">PYTHIA direct vs data</th>
-    <th scope="col" class="num">SMLab vs PYTHIA</th></tr></thead>
+    <thead><tr><th scope="col">Benchmark</th><th scope="col" class="num">Hadronica vs data</th><th scope="col" class="num">PYTHIA direct vs data</th>
+    <th scope="col" class="num">Hadronica vs PYTHIA</th></tr></thead>
     <tbody>
 {direct_rows}
     </tbody>
@@ -290,14 +290,14 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
 <section aria-labelledby="method">
   <h2 id="method">Method</h2>
   <div class="notes">
-    <p>All runs used the same beams, energies and generation cuts as SMLab's validation: 60&nbsp;000 to 150&nbsp;000 events per
+    <p>All runs used the same beams, energies and generation cuts as Hadronica's validation: 60&nbsp;000 to 150&nbsp;000 events per
     benchmark, generated in parallel chunks with independent seeds and merged with <code>rivet-merge</code>. Herwig 7.3.0 was
     built from source with herwig-bootstrap; Sherpa 3.0.0 came from conda-forge; both used their authors' example inputs,
     changing only beams, energy, cuts and output. Rivet 4.1.4 supplied the analyses and the published reference data.</p>
     <p>The scripts are in <a href="{REPO}/tree/main/hep/compare"><code>hep/compare/</code></a> of the
-    <a href="{REPO}">SMLab repository</a>: <code>builtin_vs_madgraph.py</code>,
+    <a href="{REPO}">Hadronica repository</a>: <code>builtin_vs_madgraph.py</code>,
     <code>pythia_direct.py</code>, <code>other_generators.py</code> and <code>summary.py</code>. Every number on this page is
-    read from their saved outputs, and SMLab's test suite checks the numbers quoted in its audit against the same files.</p>
+    read from their saved outputs, and Hadronica's test suite checks the numbers quoted in its audit against the same files.</p>
     <p>Generators: MadGraph5_aMC@NLO, J. Alwall et al., JHEP 07 (2014) 079,
     <a href="https://arxiv.org/abs/1405.0301">arXiv:1405.0301</a>; PYTHIA 8.3, C. Bierlich et al., SciPost Phys. Codebases 8 (2022),
     <a href="https://arxiv.org/abs/2203.11601">arXiv:2203.11601</a>; Herwig 7.3, G. Bewick et al., Eur. Phys. J. C 84 (2024) 1053,

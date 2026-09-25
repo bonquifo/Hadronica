@@ -1,18 +1,18 @@
-"""SMLab's built-in Born engine against MadGraph5_aMC@NLO at leading order.
+"""Hadronica's built-in Born engine against MadGraph5_aMC@NLO at leading order.
 
     ~/micromamba/envs/smlab-mg5/bin/python hep/compare/builtin_vs_madgraph.py [--events N]
 
 MadGraph5_aMC@NLO (J. Alwall et al., JHEP 07 (2014) 079, arXiv:1405.0301; tree
-level, G_F scheme: α = 1/132.04, on-shell sin²θ_W = 1 − M_W²/M_Z², fixed-width propagators, no QCD factor, no ISR) is the reference. SMLab's
+level, G_F scheme: α = 1/132.04, on-shell sin²θ_W = 1 − M_W²/M_Z², fixed-width propagators, no QCD factor, no ISR) is the reference. Hadronica's
 engine is run twice:
 
 * scheme-matched: its couplings switched to exactly MadGraph's (α, sin²θ_W, no
-  QCD factor), so any remaining difference is an error in SMLab's formulas;
+  QCD factor), so any remaining difference is an error in Hadronica's formulas;
 * as shipped: the improved Born approximation (running α(s), sin²θ_eff, QCD
   factor for quarks), whose differences from MadGraph are the scheme choice.
 
 The pure QED processes (Bhabha without Z exchange, e⁺e⁻ → γγ, both with the 10°
-fiducial cut, |η| < 2.4362) use α(0) in SMLab and are compared with MadGraph at
+fiducial cut, |η| < 2.4362) use α(0) in Hadronica and are compared with MadGraph at
 α = 1/137.036. The forward–backward asymmetry of e⁺e⁻ → μ⁺μ⁻ is compared on
 MadGraph's unweighted events. Writes hep/compare/builtin_vs_madgraph.json.
 """
@@ -45,7 +45,7 @@ M_W_GF = 80.3617  # derived by MadGraph from M_Z, G_F, α (see AUDIT_2026.md)
 SIN2_OS = 1.0 - (M_W_GF / C.M_Z) ** 2
 ETA_10DEG = -math.log(math.tan(math.radians(5.0)))  # θ = 10° ↔ |η| = 2.4362 for massless 2 → 2
 
-# (SMLab process id, MadGraph process, √s values, scheme: "ew" or "qed")
+# (Hadronica process id, MadGraph process, √s values, scheme: "ew" or "qed")
 CASES = [
     ("ff13", "e+ e- > mu+ mu-", (20.0, C.M_Z, 250.0, 500.0), "ew"),
     ("ff15", "e+ e- > ta+ ta-", (C.M_Z, 250.0), "ew"),
@@ -153,7 +153,7 @@ def forward_backward(path: str) -> list[float]:
 
 
 def smlab_values(pid: str, energy: float, matched: bool, scheme: str) -> dict:
-    """SMLab's Born σ (no ISR) and, for μμ, A_FB; optionally in MadGraph's coupling scheme."""
+    """Hadronica's Born σ (no ISR) and, for μμ, A_FB; optionally in MadGraph's coupling scheme."""
     process = process_by_id(pid)
     saved = (EW.alpha_em, EW.SIN2_THETA_W, EW.qcd_factor)
     if matched and scheme == "ew":
@@ -202,7 +202,7 @@ def main() -> None:
                            smlab_matched_afb=matched["afb"], smlab_shipped_afb=shipped["afb"])
             rows.append(row)
             print(f"{pid:9s} {energy:7.2f} GeV  MG {mg['sigma_pb']:11.5g} ± {mg['error_pb']:.2g} pb   "
-                  f"SMLab matched {row['matched_ratio']:.4f}   shipped {row['shipped_ratio']:.4f}", flush=True)
+                  f"Hadronica matched {row['matched_ratio']:.4f}   shipped {row['shipped_ratio']:.4f}", flush=True)
     with open(os.path.join(HERE, "builtin_vs_madgraph.json"), "w", encoding="utf-8") as handle:
         json.dump({"sin2_on_shell": SIN2_OS, "alpha_gf": ALPHA_GF, "rows": rows}, handle, indent=1)
 

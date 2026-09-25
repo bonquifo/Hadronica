@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time setup of the research-grade engines for SMLab, inside WSL (Ubuntu).
+# One-time setup of the research-grade engines for Hadronica, inside WSL (Ubuntu).
 # Installs micromamba in ~/.local/bin and two conda-forge environments:
 #   smlab-hep  PYTHIA 8.3, LHAPDF 6, HepMC3 (+ pyhepmc), FastJet, Delphes 3.5
 #              with ROOT, uproot, Rivet 4.1 and YODA 2

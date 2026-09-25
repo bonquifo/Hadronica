@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate an MC@NLO event sample with MadGraph5_aMC@NLO for SMLab.
+# Generate an MC@NLO event sample with MadGraph5_aMC@NLO for Hadronica.
 #
 #   generate_nlo.sh <process: ttbar|dy|w> <sqrt_s in GeV> <events>
 #

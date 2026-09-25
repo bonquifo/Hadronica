@@ -59,7 +59,7 @@ def test_app_requests_the_tune_only_for_samples_it_applies_to():
         application.py_nlo_samples = {"pp_z_ll@13000": {"sample": "dy_fxfx", "sigma_pb": 1900.0},
                                       "pp_ttbar@13000": {"sample": "ttbar_ms", "sigma_pb": 663.0}}
         assert "tune" not in application._py_config()  # no tune.json yet
-        application.py_tune = {"name": "SMLab-AZ 2026", "settings": {tune.KT: 1.5, tune.PT0: 1.2},
+        application.py_tune = {"name": "Hadronica-AZ 2026", "settings": {tune.KT: 1.5, tune.PT0: 1.2},
                                 "applies_to": ["dy_fxfx", "dy"]}
         config = application._py_config()
         assert config["source"] == "nlo" and config["tune"] == "smlab"

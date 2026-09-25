@@ -1,4 +1,4 @@
-"""Re-tune PYTHIA's non-perturbative initial-state parameters for SMLab's NLO samples.
+"""Re-tune PYTHIA's non-perturbative initial-state parameters for Hadronica's NLO samples.
 
     ~/micromamba/envs/smlab-hep/bin/python hep/tune.py [--events N] [--quick]
 
@@ -183,7 +183,7 @@ def main() -> None:
     best = min(grid_points, key=lambda row: row["chi2"])
     settings, method, fit, profile = choose(grid_points)
     tune = {
-        "name": "SMLab-AZ 2026",
+        "name": "Hadronica-AZ 2026",
         "settings": settings,
         "method": method,
         "sample": f"{args.sample}_13000 ("

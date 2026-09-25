@@ -1,4 +1,4 @@
-"""Print the versions of the engines SMLab uses, and where Delphes keeps its cards."""
+"""Print the versions of the engines Hadronica uses, and where Delphes keeps its cards."""
 
 import glob
 import os

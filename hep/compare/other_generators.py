@@ -1,11 +1,11 @@
-"""SMLab's validation benchmarks run with the other general-purpose generators, Sherpa and Herwig.
+"""Hadronica's validation benchmarks run with the other general-purpose generators, Sherpa and Herwig.
 
     ~/micromamba/envs/smlab-hep/bin/python hep/compare/other_generators.py sherpa|herwig [--scale 1.0]
 
-Each generator writes HepMC3 events into a named pipe that SMLab's Rivet
+Each generator writes HepMC3 events into a named pipe that Hadronica's Rivet
 reads, in parallel chunks with independent seeds; the chunks are merged with
 ``rivet-merge -e`` and scored against the data with exactly the code of
-hep/validate.py, so the numbers sit directly beside SMLab's. The generator
+hep/validate.py, so the numbers sit directly beside Hadronica's. The generator
 setups follow the authors' own example run cards (Sherpa 3.0 Examples/,
 Herwig 7.3 share/Herwig/), changing only the beams, the energy, and the event
 output. References: Sherpa 3 (E. Bothmann et al., JHEP 12 (2024) 156,
@@ -47,7 +47,7 @@ RUNS = [
 ]
 
 SHERPA_CARDS = {
-    # Examples/Jets_at_LeptonColliders/LEP_Jets, without initial-state radiation (as the ALEPH data and SMLab),
+    # Examples/Jets_at_LeptonColliders/LEP_Jets, without initial-state radiation (as the ALEPH data and Hadronica),
     # and with LEP's stable-particle convention: τ > 1 ns (cτ > 300 mm) stable, so K⁰_S and Λ decay; ALEPH
     # counted their charged products. (Sherpa's default, cτ > 10 mm, leaves both undecayed.)
     "lep": """HADRON_DECAYS: {Max_Proper_Lifetime: 300.}
@@ -121,7 +121,7 @@ PROCESSES:
     Order: {QCD: 2, EW: 0}
     CKKW: 20
 """,
-    # Examples/Jets_at_HadronColliders/LHC_Jets_MEPS: 2 → 2, jets above 100 GeV (as SMLab's p̂T > 100 GeV).
+    # Examples/Jets_at_HadronColliders/LHC_Jets_MEPS: 2 → 2, jets above 100 GeV (as Hadronica's p̂T > 100 GeV).
     "jets": """BEAMS: 2212
 BEAM_ENERGIES: 6500
 PROCESSES:
@@ -165,7 +165,7 @@ def sherpa_chunk(run_key: str, base: str, directory: str, n: int, seed: int) -> 
 # -- Herwig ------------------------------------------------------------------------
 
 # Herwig 7.3's own inputs (share/Herwig/LEP.in, LHC-MB.in, LHC.in) with its HepMC snippet;
-# only the energy, the hard process, and generation cuts matching SMLab's are set here.
+# only the energy, the hard process, and generation cuts matching Hadronica's are set here.
 HERWIG_INPUTS = {
     # No initial-state radiation, as ALEPH's data are corrected for it: EECollider.in radiates photons off
     # the beams both in the shower and through electron structure functions (beam photons in 263 of 300

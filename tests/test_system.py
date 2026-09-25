@@ -5,7 +5,7 @@
 * Custom collisions of every species pair the picker offers, at random momenta
   and angles.
 * Long randomized click sessions on the real interface, in both engines.
-* The application self-test (``SMLab.exe --selftest``) run in-process, and every
+* The application self-test (``Hadronica.exe --selftest``) run in-process, and every
   PYTHIA process at every preset through the same bridge the GUI uses.
 
 Every event shown must conserve four-momentum and charge, and nothing may raise.

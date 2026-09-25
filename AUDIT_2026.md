@@ -1,5 +1,7 @@
 # SMLab physics audit and UI rebuild (September 2026)
 
+> **Renamed.** On 25 September 2026 the application was renamed **Hadronica** (still subtitled Standard Model Collision Laboratory). The rounds below keep the name it had when they were written: "SMLab" is Hadronica, and the "SMLab-AZ 2026" shower tune is now "Hadronica-AZ 2026".
+
 The original Grok-built code is preserved in `_original_backup/`.
 
 ## Inputs updated to current sources

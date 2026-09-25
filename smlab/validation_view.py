@@ -1,4 +1,4 @@
-"""The Validation panel: SMLab's generators against published measurements (Rivet).
+"""The Validation panel: Hadronica's generators against published measurements (Rivet).
 
 Reads the results.json written by hep/validate.py and draws, for each
 benchmark, the agreement summary and every compared distribution with the

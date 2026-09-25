@@ -1,4 +1,4 @@
-"""SMLab window: setup panel, event display, and results panel."""
+"""Hadronica window: setup panel, event display, and results panel."""
 
 from __future__ import annotations
 
@@ -114,7 +114,7 @@ class LabApp(PythiaMode):
     def __init__(self, size: tuple[int, int] = (1480, 900), *, headless: bool = False, seed: int = 20240921):
         if not pygame.get_init():
             pygame.init()
-        pygame.display.set_caption("SMLab — Standard Model Collision Laboratory")
+        pygame.display.set_caption("Hadronica — Standard Model Collision Laboratory")
         flags = pygame.HIDDEN if headless else pygame.RESIZABLE
         self.screen = pygame.display.set_mode(size, flags)
         pygame.display.set_icon(self._icon())
@@ -877,7 +877,7 @@ class LabApp(PythiaMode):
         pygame.draw.circle(self.screen, (44, 70, 120), (cx, cy), 8, 2)
         pygame.draw.line(self.screen, (88, 214, 255), (cx, cy), (cx + 11, cy - 8), 2)
         pygame.draw.line(self.screen, GOLD, (cx, cy), (cx - 9, cy + 9), 2)
-        brand = self._blit("brand", "SMLab", TEXT, (60, cy - 1), "midleft")
+        brand = self._blit("brand", "Hadronica", TEXT, (60, cy - 1), "midleft")
         subtitle = self._blit("small", "Standard Model Collision Laboratory", TEXT_2, (brand.right + 12, cy), "midleft")
         self._engine_switch(subtitle.right + 28, cy - 16, 250)
 
@@ -924,7 +924,7 @@ class LabApp(PythiaMode):
             self.screen.blit(key_image, key_image.get_rect(center=box.center))
             label = self._blit("small", text, TEXT_3, (box.right + 6, rect.centery), "midleft")
             x = label.right + 16
-        right = f"SMLab {__version__}"
+        right = f"Hadronica {__version__}"
         if self.event is not None:
             count = self.py_event_count if self.pythia_mode else self.counter
             right = f"event {count}   ·   seed {self.event.seed}   ·   " + right
@@ -1905,4 +1905,4 @@ def _report_crash(exc: BaseException) -> None:
     if sys.platform == "win32":
         import ctypes
 
-        ctypes.windll.user32.MessageBoxW(0, f"{exc}\n\n{path}", "SMLab", 0x10)
+        ctypes.windll.user32.MessageBoxW(0, f"{exc}\n\n{path}", "Hadronica", 0x10)

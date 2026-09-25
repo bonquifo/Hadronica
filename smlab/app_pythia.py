@@ -1,4 +1,4 @@
-"""PYTHIA 8.3 mode for the SMLab window.
+"""PYTHIA 8.3 mode for the Hadronica window.
 
 Mixed into :class:`smlab.app.LabApp`. Everything here drives the WSL worker
 through :mod:`smlab.engine` and presents full events: showers, hadrons,
@@ -57,7 +57,7 @@ BATCH_CHUNK = 25
 PY_HELP = {
     "engine": (
         "Physics engine",
-        "Built-in LO is SMLab's own leading-order generator: instant, exact formulas, partons drawn as lines. "
+        "Built-in LO is Hadronica's own leading-order generator: instant, exact formulas, partons drawn as lines. "
         "PYTHIA 8.3 is the research-grade generator used at the LHC: QED and QCD showers, multiparton interactions, "
         "Lund string hadronization, and hadron decays with real decay vertices, with the Monash 2013 tune. "
         "It runs in WSL, so the first event after a change takes a moment to initialize.",
@@ -184,7 +184,7 @@ class PythiaMode:
         return self.py_nlo_samples.get(f"{self.py_process}@{int(round(self.py_energy['pp']))}")
 
     def _py_tune_applies(self) -> bool:
-        """Whether the SMLab shower tune (hep/tune.py) exists for the selected MC@NLO sample."""
+        """Whether the Hadronica shower tune (hep/tune.py) exists for the selected MC@NLO sample."""
         sample = self._py_nlo_sample()
         if not self.py_tune or not self.py_tune.get("settings") or sample is None:
             return False
@@ -407,7 +407,7 @@ class PythiaMode:
         if self._py_nlo_sample() is not None:
             options += (("NLO hard process (MadGraph5_aMC@NLO)", "nlo"),)
             if self.py_options["nlo"] and self._py_tune_applies():
-                options += ((f"{self.py_tune.get('name') or 'SMLab'} shower tune", "tune"),)
+                options += ((f"{self.py_tune.get('name') or 'Hadronica'} shower tune", "tune"),)
         options += (("Detector simulation (Delphes)", "detector"),)
         for label, key in options:
             self._switch_py(pygame.Rect(x - 8, y, w + 16, 32), label, self.py_options[key], key)

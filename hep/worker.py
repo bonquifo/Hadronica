@@ -1,4 +1,4 @@
-"""PYTHIA 8 event worker for SMLab. Runs inside WSL (Linux) and talks JSON lines.
+"""PYTHIA 8 event worker for Hadronica. Runs inside WSL (Linux) and talks JSON lines.
 
 Protocol, one JSON object per line on stdin; one JSON reply per line on stdout:
 
@@ -166,7 +166,7 @@ PROCESSES: dict[str, dict] = {
 MB_TO_PB = 1.0e9
 
 NLO_DIR = os.path.join(os.path.expanduser("~"), "smlab-cache", "nlo")
-# SMLab process → MadGraph5_aMC@NLO sample names, most accurate first
+# Hadronica process → MadGraph5_aMC@NLO sample names, most accurate first
 # (see hep/mg5/generate_nlo.sh): t t̄ with MadSpin spin-correlated decays, and
 # FxFx-merged Z + 0, 1, 2 jets at NLO.
 NLO_SAMPLES = {"pp_ttbar": ("ttbar_ms", "ttbar"), "pp_z_ll": ("dy_fxfx", "dy"), "pp_w_lnu": ("w",)}
@@ -245,7 +245,7 @@ def nlo_samples(all_variants: bool = False) -> dict[str, dict]:
 
 
 def smlab_tune() -> dict | None:
-    """The SMLab shower tune written by hep/tune.py (name, settings, applies_to), if any."""
+    """The Hadronica shower tune written by hep/tune.py (name, settings, applies_to), if any."""
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "validation", "tune.json")
     if not os.path.exists(path):
         return None
@@ -255,7 +255,7 @@ def smlab_tune() -> dict | None:
 
 
 def smlab_tune_settings(nlo: dict | None) -> dict:
-    """Settings of the SMLab tune for this MC@NLO sample; none for LO (Monash) runs."""
+    """Settings of the Hadronica tune for this MC@NLO sample; none for LO (Monash) runs."""
     tune = smlab_tune()
     if nlo is None or tune is None:
         return {}

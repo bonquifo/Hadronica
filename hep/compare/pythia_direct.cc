@@ -1,5 +1,5 @@
-// PYTHIA 8 run directly into Rivet, bypassing every SMLab layer (worker, event
-// serialization, SMLab's HepMC conversion, weight handling). Events are converted
+// PYTHIA 8 run directly into Rivet, bypassing every Hadronica layer (worker, event
+// serialization, Hadronica's HepMC conversion, weight handling). Events are converted
 // by PYTHIA's own HepMC3 interface (Pythia8Plugins/HepMC3.h) and analysed by a
 // Rivet 4 AnalysisHandler. (PYTHIA 8.312's Pythia8Rivet.h targets the Rivet 3 API.)
 //

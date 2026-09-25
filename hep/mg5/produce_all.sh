@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Produce SMLab's MC@NLO samples: 13 TeV for validation against published
+# Produce Hadronica's MC@NLO samples: 13 TeV for validation against published
 # data, then 13.6 TeV (LHC Run 3) for the app. Existing samples are kept.
 set -uo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)

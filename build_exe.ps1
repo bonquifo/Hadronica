@@ -1,4 +1,4 @@
-# Build a windowed SMLab.exe next to this script. The WSL-side scripts
+# Build a windowed Hadronica.exe next to this script. The WSL-side scripts
 # (PYTHIA worker, Delphes bridge, Rivet validation, MadGraph tools) and the
 # baseline validation results and shower tune are bundled so the executable is self-contained.
 Set-StrictMode -Version Latest
@@ -13,10 +13,10 @@ $data = @(
     "hep\ext\smlab_fxfx.cpp;hep\ext", "hep\ext\build_fxfx.sh;hep\ext",
     "smlab\assets\window_icon.png;smlab\assets"
 )
-# The SMLab shower tune (written by hep/tune.py), applied by the worker in NLO mode.
+# The Hadronica shower tune (written by hep/tune.py), applied by the worker in NLO mode.
 if (Test-Path "hep\validation\tune.json") { $data += "hep\validation\tune.json;hep\validation" }
 # The exe's own icon (Explorer, shortcuts, pinned taskbar), all sizes 16-256 px; see tools/make_icon.py.
-$pyiArgs = @("--noconfirm", "--clean", "--windowed", "--onefile", "--name", "SMLab", "--collect-all", "pygame",
+$pyiArgs = @("--noconfirm", "--clean", "--windowed", "--onefile", "--name", "Hadronica", "--collect-all", "pygame",
              "--icon", "smlab\assets\icon.ico")
 if ($env:SMLAB_DIST) { $pyiArgs += @("--distpath", $env:SMLAB_DIST) }
 foreach ($item in $data) { $pyiArgs += @("--add-data", $item) }
@@ -25,4 +25,4 @@ foreach ($item in $data) { $pyiArgs += @("--add-data", $item) }
 $ErrorActionPreference = "Continue"
 python -m PyInstaller @pyiArgs run_smlab.py 2>&1 | ForEach-Object { "$_" }
 if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed with exit code $LASTEXITCODE" }
-Write-Host "Built SMLab.exe"
+Write-Host "Built Hadronica.exe"

@@ -411,7 +411,7 @@ def _round7_claims() -> list[tuple[str, float, str]]:
                ("PYTHIA direct minbias", table["lhc_minbias"]["pythia_direct"], "36.7")]
     for key, quoted in (("lep_z_hadrons", "1.02"), ("lhc_minbias", "1.74"), ("lhc_z_pt", "1.00"),
                         ("lhc_ttbar", "0.70"), ("lhc_jets", "1.01")):
-        claims.append((f"SMLab vs direct {key}", direct[key]["median_smlab_vs_direct"], quoted))
+        claims.append((f"Hadronica vs direct {key}", direct[key]["median_smlab_vs_direct"], quoted))
     return claims
 
 

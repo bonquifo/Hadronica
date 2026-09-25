@@ -1,4 +1,4 @@
-"""Generate SMLab's icons: smlab/assets/icon.ico (the exe), window_icon.png (the window), icon.png (512 px).
+"""Generate Hadronica's icons: smlab/assets/icon.ico (the exe), window_icon.png (the window), icon.png (512 px).
 
     python tools/make_icon.py
 

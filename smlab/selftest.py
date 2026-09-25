@@ -1,4 +1,4 @@
-"""End-to-end self-test of the application: ``SMLab.exe --selftest [report.json]``.
+"""End-to-end self-test of the application: ``Hadronica.exe --selftest [report.json]``.
 
 Runs headless inside the real application object, exactly as a user session
 would: the built-in engine for every process at every preset energy, then the
@@ -123,7 +123,7 @@ class SelfTest:
         self.collide("μ⁺μ⁻ → t t̄ at 3 TeV with the muon-collider detector", "mumu", "ll_ttbar", 3000.0,
                      detector=True)
         self.collide("pp → H → 4ℓ at 13.6 TeV", "pp", "pp_h_4l", 13600.0)
-        z_nlo = self.collide("pp → Z NLO (FxFx) with the SMLab tune", "pp", "pp_z_ll", 13600.0)
+        z_nlo = self.collide("pp → Z NLO (FxFx) with the Hadronica tune", "pp", "pp_z_ll", 13600.0)
         if app.py_nlo_samples.get("pp_z_ll@13600"):
             self.check("NLO mode used the MC@NLO sample and the tune", bool(z_nlo) and z_nlo.get("source") == "nlo"
                        and (z_nlo.get("tune") == "smlab" or not app.py_tune), str(z_nlo))

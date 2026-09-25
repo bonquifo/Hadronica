@@ -1,4 +1,4 @@
-"""Validate SMLab's PYTHIA (and MadGraph) events against published data with Rivet.
+"""Validate Hadronica's PYTHIA (and MadGraph) events against published data with Rivet.
 
     ~/micromamba/envs/smlab-hep/bin/python hep/validate.py [--quick] [--only KEY ...]
 
@@ -31,7 +31,7 @@ sys.path.insert(0, HERE)
 BIN = os.path.join(sys.prefix, "bin")
 OUT_DIR = os.path.join(HERE, "validation")
 
-# Each benchmark: which physics it tests, the SMLab configuration, the Rivet
+# Each benchmark: which physics it tests, the Hadronica configuration, the Rivet
 # analysis (INSPIRE-coded name), and the number of events.
 BENCHMARKS = [
     {
@@ -63,7 +63,7 @@ BENCHMARKS = [
         "variants": [
             {"suffix": "nlo", "label": "MadGraph5_aMC@NLO + PYTHIA 8.3", "source": {"source": "nlo", "sample": "dy"}},
             {"suffix": "fxfx", "label": "FxFx Z+0,1,2j NLO + PYTHIA 8.3", "source": {"source": "nlo", "sample": "dy_fxfx"}},
-            {"suffix": "fxfx_tuned", "label": "FxFx + PYTHIA 8.3, SMLab tune",
+            {"suffix": "fxfx_tuned", "label": "FxFx + PYTHIA 8.3, Hadronica tune",
              "source": {"source": "nlo", "sample": "dy_fxfx"}, "tuned": True},
         ],
     },
@@ -78,7 +78,7 @@ BENCHMARKS = [
         "variants": [
             {"suffix": "nlo", "label": "MadGraph5_aMC@NLO + PYTHIA 8.3", "source": {"source": "nlo", "sample": "ttbar"}},
             {"suffix": "nlo_ms", "label": "aMC@NLO + MadSpin + PYTHIA 8.3", "source": {"source": "nlo", "sample": "ttbar_ms"}},
-            {"suffix": "ms_tuned", "label": "aMC@NLO + MadSpin, SMLab tune",
+            {"suffix": "ms_tuned", "label": "aMC@NLO + MadSpin, Hadronica tune",
              "source": {"source": "nlo", "sample": "ttbar_ms"}, "tuned": True},
         ],
     },
@@ -93,7 +93,7 @@ BENCHMARKS = [
         "variants": [
             {"suffix": "nlo", "label": "MadGraph5_aMC@NLO + PYTHIA 8.3", "source": {"source": "nlo", "sample": "ttbar"}},
             {"suffix": "nlo_ms", "label": "aMC@NLO + MadSpin + PYTHIA 8.3", "source": {"source": "nlo", "sample": "ttbar_ms"}},
-            {"suffix": "ms_tuned", "label": "aMC@NLO + MadSpin, SMLab tune",
+            {"suffix": "ms_tuned", "label": "aMC@NLO + MadSpin, Hadronica tune",
              "source": {"source": "nlo", "sample": "ttbar_ms"}, "tuned": True},
         ],
     },
@@ -360,7 +360,7 @@ def run(bench: dict, scale: float, source: dict | None = None, label: str = "PYT
 
 
 def load_tune() -> dict | None:
-    """The SMLab shower tune written by hep/tune.py, if one exists."""
+    """The Hadronica shower tune written by hep/tune.py, if one exists."""
     path = os.path.join(HERE, "validation", "tune.json")
     if not os.path.exists(path):
         return None

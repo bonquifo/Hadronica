@@ -210,11 +210,11 @@ def event_from_reply(raw: dict, *, seed: int, sqrt_s: float, beam_id: str, proce
 
 
 def _children_die_with_us() -> bool:
-    """Put SMLab in a Windows job object that kills its members when SMLab exits.
+    """Put Hadronica in a Windows job object that kills its members when Hadronica exits.
 
     Windows does not end child processes with their parent. Processes started
     after this call (wsl.exe and the helpers it spawns) inherit the job, so a
-    crashed or force-closed SMLab cannot leave the WSL worker running: when the
+    crashed or force-closed Hadronica cannot leave the WSL worker running: when the
     last handle to the job closes, every member is terminated and the worker
     sees end-of-input. Returns True when the job is in place.
     """
@@ -274,7 +274,7 @@ def _children_die_with_us() -> bool:
     if not kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess()):
         kernel32.CloseHandle(job)
         return False
-    _JOBS.append(job)  # kept open until SMLab exits
+    _JOBS.append(job)  # kept open until Hadronica exits
     return True
 
 

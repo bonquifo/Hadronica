@@ -1,9 +1,9 @@
-"""Summarize SMLab's comparison with other generators (Round 7 of AUDIT_2026.md).
+"""Summarize Hadronica's comparison with other generators (Round 7 of AUDIT_2026.md).
 
     python hep/compare/summary.py
 
 Reads the saved outputs of builtin_vs_madgraph.py, pythia_direct.py, and
-other_generators.py (sherpa, herwig) plus SMLab's own hep/validation/results.json,
+other_generators.py (sherpa, herwig) plus Hadronica's own hep/validation/results.json,
 and prints the tables quoted in AUDIT_2026.md.
 """
 
@@ -62,9 +62,9 @@ def main() -> None:
           f"{mg['points']} points, largest deviation {100 * mg['max_matched_deviation']:.2f} %; "
           f"A_FB pulls {', '.join(f'{p:+.1f}' for p in mg['afb_pulls'])}")
     direct = load("pythia_direct.json")
-    print("SMLab's PYTHIA mode vs PYTHIA run directly (MC-vs-MC median χ²/ndf):",
+    print("Hadronica's PYTHIA mode vs PYTHIA run directly (MC-vs-MC median χ²/ndf):",
           ", ".join(f"{k} {v['median_smlab_vs_direct']:.2f}" for k, v in direct.items()))
-    print(f"{'benchmark':17s} {'SMLab LO':>9s} {'PYTHIA':>7s} {'Herwig':>7s} {'Sherpa':>7s}   SMLab best")
+    print(f"{'benchmark':17s} {'Hadronica LO':>9s} {'PYTHIA':>7s} {'Herwig':>7s} {'Sherpa':>7s}   Hadronica best")
     for key, row in generator_table():
         fmt = lambda v: "   —   " if v is None else f"{v:7.2f}"  # noqa: E731
         print(f"{key:17s} {row['smlab_lo']:9.2f} {fmt(row['pythia_direct'])} {fmt(row['herwig'])} "

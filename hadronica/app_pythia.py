@@ -1,7 +1,7 @@
 """PYTHIA 8.3 mode for the Hadronica window.
 
-Mixed into :class:`smlab.app.LabApp`. Everything here drives the WSL worker
-through :mod:`smlab.engine` and presents full events: showers, hadrons,
+Mixed into :class:`hadronica.app.LabApp`. Everything here drives the WSL worker
+through :mod:`hadronica.engine` and presents full events: showers, hadrons,
 jets, displaced vertices, and PYTHIA's own cross sections.
 """
 
@@ -11,14 +11,14 @@ import math
 
 import pygame
 
-from smlab.constants import M_H, M_T, M_Z, format_cross_section, format_energy
-from smlab.engine import PythiaEngine, PythiaEvent, conservation, event_from_reply
-from smlab.fullscene import MIN_PT_CHARGED, build_traces, count_summary
-from smlab.guide import GuideCard
-from smlab.histogram import Histogram
-from smlab.lorentz import FourVector
-from smlab.report import brief_result, english_name, register_species, rest_mass, symbol
-from smlab.theme import ACCENT, ACCENT_SOFT, BG, BORDER, SURFACE_2, SURFACE_3, TEXT, TEXT_2, TEXT_3, WARN, particle_color
+from hadronica.constants import M_H, M_T, M_Z, format_cross_section, format_energy
+from hadronica.engine import PythiaEngine, PythiaEvent, conservation, event_from_reply
+from hadronica.fullscene import MIN_PT_CHARGED, build_traces, count_summary
+from hadronica.guide import GuideCard
+from hadronica.histogram import Histogram
+from hadronica.lorentz import FourVector
+from hadronica.report import brief_result, english_name, register_species, rest_mass, symbol
+from hadronica.theme import ACCENT, ACCENT_SOFT, BG, BORDER, SURFACE_2, SURFACE_3, TEXT, TEXT_2, TEXT_3, WARN, particle_color
 
 PY_BEAMS = (("ee", "e⁻ × e⁺"), ("mumu", "μ⁻ × μ⁺"), ("pp", "p × p"))
 PY_RANGES = {
@@ -172,7 +172,7 @@ class PythiaMode:
             if self.py_options["nlo"] and self._py_nlo_sample() is not None:
                 config["source"] = "nlo"
                 if self.py_options["tune"] and self._py_tune_applies():
-                    config["tune"] = "smlab"
+                    config["tune"] = "hadronica"
         else:
             config["isr"] = self.py_options["isr"]
         return config

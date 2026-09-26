@@ -14,7 +14,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from smlab.constants import P_OVER_QRB
+from hadronica.constants import P_OVER_QRB
 
 
 @dataclass(frozen=True, slots=True)

@@ -11,7 +11,7 @@ import sys
 
 import pytest
 
-from smlab import engine
+from hadronica import engine
 from tests.test_engine import _wsl_engine_available
 
 

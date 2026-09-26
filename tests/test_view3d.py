@@ -7,9 +7,9 @@ import math
 import pygame
 import pytest
 
-from smlab.app import LabApp
-from smlab.tracks import curvature_radius, track_helix
-from smlab.view3d import Orbit
+from hadronica.app import LabApp
+from hadronica.tracks import curvature_radius, track_helix
+from hadronica.view3d import Orbit
 
 
 def test_helix_advances_along_the_field_with_the_arc():

@@ -2,9 +2,9 @@
 
 import math
 
-from smlab.constants import M_Z
-from smlab.generator import conservation_report, generate_event
-from smlab.incoming import (
+from hadronica.constants import M_Z
+from hadronica.generator import conservation_report, generate_event
+from hadronica.incoming import (
     beam_for_initial,
     beta_speed,
     embed_in_lab,
@@ -13,9 +13,9 @@ from smlab.incoming import (
     invariant_sqrt_s,
     rotate_z_onto,
 )
-from smlab.lorentz import FourVector
-from smlab.particles import species
-from smlab.processes import process_by_id
+from hadronica.lorentz import FourVector
+from hadronica.particles import species
+from hadronica.processes import process_by_id
 
 
 def test_head_on_electron_momenta_recover_the_z_pole():

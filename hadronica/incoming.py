@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import math
 
-from smlab.generator import Event, ParticleRecord, _assert_conserved
-from smlab.lorentz import FourVector, boost
-from smlab.particles import species
-from smlab.processes import BEAMS, BeamMode
+from hadronica.generator import Event, ParticleRecord, _assert_conserved
+from hadronica.lorentz import FourVector, boost
+from hadronica.particles import species
+from hadronica.processes import BEAMS, BeamMode
 
 # Elementary species, then the mesons the decay library already knows.
 COLLIDER_GROUPS: tuple[tuple[str, tuple[int, ...]], ...] = (

@@ -11,8 +11,8 @@ import math
 import numpy as np
 import pytest
 
-from smlab.constants import ALPHA, G_F, GAMMA_Z, M_H, M_MU, M_Z, PB_PER_GEV2, SIN2_THETA_W
-from smlab.decays import (
+from hadronica.constants import ALPHA, G_F, GAMMA_Z, M_H, M_MU, M_Z, PB_PER_GEV2, SIN2_THETA_W
+from hadronica.decays import (
     HIGGS_BR,
     TAU_BR,
     branching_table_w,
@@ -21,7 +21,7 @@ from smlab.decays import (
     leptonic_decay,
     michel_x,
 )
-from smlab.electroweak import (
+from hadronica.electroweak import (
     alpha_em,
     alpha_s,
     bhabha_dsigma_domega,
@@ -42,12 +42,12 @@ from smlab.electroweak import (
     to_pb,
     z_partial_widths,
 )
-from smlab.generator import generate_event, sigma_pb
-from smlab.kinematics import kallen, two_body_cm, two_body_decay, two_body_momentum
-from smlab.lorentz import FourVector, boost, boost_from_rest
-from smlab.particles import species
-from smlab.processes import BEAMS, process_by_id
-from smlab.tracks import curvature_radius, track_polyline
+from hadronica.generator import generate_event, sigma_pb
+from hadronica.kinematics import kallen, two_body_cm, two_body_decay, two_body_momentum
+from hadronica.lorentz import FourVector, boost, boost_from_rest
+from hadronica.particles import species
+from hadronica.processes import BEAMS, process_by_id
+from hadronica.tracks import curvature_radius, track_polyline
 
 
 def _trap(ys: np.ndarray, xs: np.ndarray) -> float:
@@ -240,7 +240,7 @@ def test_tracks_curve_with_the_lorentz_force():
 
 
 def _assert_event(event):
-    report = __import__("smlab.generator", fromlist=["conservation_report"]).conservation_report(event)
+    report = __import__("hadronica.generator", fromlist=["conservation_report"]).conservation_report(event)
     assert report.ok, report
     assert event.sqrt_s_hat <= event.sqrt_s + 1e-6
     assert len(event.finals()) >= 2
@@ -289,7 +289,7 @@ def test_generated_events_conserve_everything(process_id, beam, sqrt_s, isr, for
 
 def test_dimuon_at_the_z_has_no_missing_transverse_momentum():
     event = generate_event(process_by_id("ff13"), "ee", M_Z, seed=3, isr=False)
-    from smlab.generator import conservation_report
+    from hadronica.generator import conservation_report
 
     report = conservation_report(event)
     assert report.missing_px == pytest.approx(0.0, abs=1e-8)
@@ -356,7 +356,7 @@ def test_running_alpha_reaches_the_on_shell_value_at_the_z():
 
 
 def test_alpha_s_is_continuous_across_flavor_thresholds():
-    from smlab.constants import M_B, M_C, M_T
+    from hadronica.constants import M_B, M_C, M_T
 
     for threshold in (M_C, M_B, M_T):
         below = alpha_s(threshold * (1.0 - 1.0e-9))
@@ -391,8 +391,8 @@ def test_electron_neutrino_pair_includes_w_exchange():
 
 
 def test_isr_radiator_is_normalized_and_the_z_peak_matches_lep():
-    from smlab.generator import IsrTable
-    from smlab.kinematics import isr_exponent, isr_weight
+    from hadronica.generator import IsrTable
+    from hadronica.kinematics import isr_exponent, isr_weight
 
     beta = isr_exponent(M_Z, species(11).mass, ALPHA)
     us = np.linspace(0.0, 1.0, 200001)
@@ -420,8 +420,8 @@ def test_angular_sampling_is_continuous():
 
 
 def test_higgs_to_ww_star_has_one_off_shell_boson():
-    from smlab.constants import GAMMA_W, M_W
-    from smlab.decays import sample_virtual_pair
+    from hadronica.constants import GAMMA_W, M_W
+    from hadronica.decays import sample_virtual_pair
 
     rng = np.random.default_rng(5)
     pairs = [sample_virtual_pair(M_H, M_W, GAMMA_W, rng) for _ in range(3000)]
@@ -433,7 +433,7 @@ def test_higgs_to_ww_star_has_one_off_shell_boson():
 
 
 def test_three_prong_tau_channel_has_three_charged_pions():
-    from smlab.decays import _decay_tau_channel
+    from hadronica.decays import _decay_tau_channel
 
     parent = FourVector(species(15).mass, 0.0, 0.0, 0.0)
     daughters = _decay_tau_channel(parent, 1, "three_prong_pi0", np.random.default_rng(2))

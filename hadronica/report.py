@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from smlab.constants import (
+from hadronica.constants import (
     C_M_PER_S,
     C_TAU_MU_M,
     C_TAU_PI_M,
@@ -25,7 +25,7 @@ from smlab.constants import (
     TAU_PI0_S,
     format_energy,
 )
-from smlab.particles import is_quark, species
+from hadronica.particles import is_quark, species
 
 # PDG widths, GeV. The Higgs entry is the SM prediction of the LHC HXSWG.
 _WIDTH_GEV = {

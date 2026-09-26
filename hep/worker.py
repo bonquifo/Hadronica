@@ -165,7 +165,7 @@ PROCESSES: dict[str, dict] = {
 
 MB_TO_PB = 1.0e9
 
-NLO_DIR = os.path.join(os.path.expanduser("~"), "smlab-cache", "nlo")
+NLO_DIR = os.path.join(os.path.expanduser("~"), "hadronica-cache", "nlo")
 # Hadronica process → MadGraph5_aMC@NLO sample names, most accurate first
 # (see hep/mg5/generate_nlo.sh): t t̄ with MadSpin spin-correlated decays, and
 # FxFx-merged Z + 0, 1, 2 jets at NLO.
@@ -210,10 +210,10 @@ MCATNLO_SETTINGS = (
 
 
 def fxfx_available() -> bool:
-    """Whether hep/ext/smlab_fxfx (PYTHIA's FxFx matching hook) is built."""
+    """Whether hep/ext/hadronica_fxfx (PYTHIA's FxFx matching hook) is built."""
     import importlib.util
 
-    return importlib.util.find_spec("smlab_fxfx") is not None
+    return importlib.util.find_spec("hadronica_fxfx") is not None
 
 
 def nlo_samples(all_variants: bool = False) -> dict[str, dict]:
@@ -244,7 +244,7 @@ def nlo_samples(all_variants: bool = False) -> dict[str, dict]:
     return out
 
 
-def smlab_tune() -> dict | None:
+def hadronica_tune() -> dict | None:
     """The Hadronica shower tune written by hep/tune.py (name, settings, applies_to), if any."""
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "validation", "tune.json")
     if not os.path.exists(path):
@@ -254,9 +254,9 @@ def smlab_tune() -> dict | None:
     return {key: tune.get(key) for key in ("name", "settings", "applies_to", "data", "sample")}
 
 
-def smlab_tune_settings(nlo: dict | None) -> dict:
+def hadronica_tune_settings(nlo: dict | None) -> dict:
     """Settings of the Hadronica tune for this MC@NLO sample; none for LO (Monash) runs."""
-    tune = smlab_tune()
+    tune = hadronica_tune()
     if nlo is None or tune is None:
         return {}
     applies = tune.get("applies_to")
@@ -290,7 +290,7 @@ class Worker:
             "pythia": f"{version:.3f}",
             "processes": {key: {"title": p["title"], "beams": p["beams"]} for key, p in PROCESSES.items()},
             "nlo_samples": {key: {k: v for k, v in info.items() if k != "path"} for key, info in nlo_samples().items()},
-            "tune": smlab_tune(),
+            "tune": hadronica_tune(),
             "python": sys.version.split()[0],
         }
 
@@ -332,12 +332,12 @@ class Worker:
                 ]
                 lines = [line for line in lines if line != "JetMatching:doFxFx = off"]
                 # The JetMatching settings act only through PYTHIA's matching hook
-                # (Pythia8Plugins/JetMatching.h), attached by hep/ext/smlab_fxfx.cpp.
+                # (Pythia8Plugins/JetMatching.h), attached by hep/ext/hadronica_fxfx.cpp.
                 if not fxfx_available():
                     raise RuntimeError("FxFx sample needs PYTHIA's matching hook: run hep/ext/build_fxfx.sh")
-                import smlab_fxfx
+                import hadronica_fxfx
 
-                smlab_fxfx.attach(pythia)
+                hadronica_fxfx.attach(pythia)
         elif beams == "pp":
             lines += ["Beams:idA = 2212", "Beams:idB = 2212"]
         else:
@@ -372,11 +372,11 @@ class Worker:
         else:
             # The hard process comes from the file; keep only the decay-mode choices.
             lines += [line for line in spec["settings"] if line.split(":")[0].strip().isdigit()]
-        # Shower-tune overrides (see hep/tune.py), applied last. "smlab" selects the
+        # Shower-tune overrides (see hep/tune.py), applied last. "hadronica" selects the
         # tune in validation/tune.json, which was fitted on top of the MC@NLO settings.
         tune = config.get("tune") or {}
-        if tune == "smlab":
-            tune = smlab_tune_settings(nlo)
+        if tune == "hadronica":
+            tune = hadronica_tune_settings(nlo)
         lines += [f"{key} = {value}" for key, value in tune.items()]
         lines += ["Random:setSeed = on", f"Random:seed = {int(config.get('seed', 1)) % 900000000}"]
         for line in lines:

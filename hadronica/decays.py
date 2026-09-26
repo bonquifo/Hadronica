@@ -26,7 +26,7 @@ from typing import Sequence
 
 import numpy as np
 
-from smlab.constants import (
+from hadronica.constants import (
     CKM_ABS,
     GAMMA_A1,
     GAMMA_RHO,
@@ -39,10 +39,10 @@ from smlab.constants import (
     M_W,
     M_Z,
 )
-from smlab.electroweak import alpha_s, z_partial_widths
-from smlab.kinematics import kallen, two_body_decay
-from smlab.lorentz import FourVector, boost_from_rest
-from smlab.particles import is_quark, species
+from hadronica.electroweak import alpha_s, z_partial_widths
+from hadronica.kinematics import kallen, two_body_decay
+from hadronica.lorentz import FourVector, boost_from_rest
+from hadronica.particles import is_quark, species
 
 # SM Higgs branching fractions at m_H = 125.10 GeV (LHC HXSWG, YR4 table,
 # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR).

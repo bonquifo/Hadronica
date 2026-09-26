@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 
-from smlab.lorentz import FourVector, boost_from_rest
+from hadronica.lorentz import FourVector, boost_from_rest
 
 
 def kallen(x: float, y: float, z: float) -> float:

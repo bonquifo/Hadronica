@@ -1,6 +1,6 @@
 """Drive worker.py through its JSON protocol, as the Windows bridge does.
 
-    ~/micromamba/envs/smlab-hep/bin/python hep/selftest.py
+    ~/micromamba/envs/hadronica-hep/bin/python hep/selftest.py
 """
 
 import json

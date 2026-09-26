@@ -10,12 +10,13 @@ from __future__ import annotations
 import json
 import math
 import os
+import shutil
 import subprocess
 import sys
 
 import pygame
 
-from smlab.theme import (
+from hadronica.theme import (
     ACCENT,
     ACCENT_SOFT,
     BAD,
@@ -51,7 +52,17 @@ def variant_color(entry: dict):
 
 def user_results_dir() -> str:
     base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
-    return os.path.join(base, "SMLab", "validation")
+    path = os.path.join(base, "Hadronica", "validation")
+    # Results saved before the rename to Hadronica move to the new folder once.
+    old = os.path.join(base, "SMLab", "validation")
+    if not os.path.exists(path) and os.path.isdir(old):
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            shutil.move(old, path)
+            os.rmdir(os.path.dirname(old))
+        except OSError:
+            pass
+    return path
 
 
 def _bundled_results() -> str:
@@ -133,7 +144,7 @@ class ValidationRun:
     def start(self) -> None:
         if self.running:
             return
-        from smlab.engine import ENV_PYTHON, WSL_DISTRO, _children_die_with_us, worker_path_in_wsl
+        from hadronica.engine import ENV_PYTHON, WSL_DISTRO, _children_die_with_us, worker_path_in_wsl
 
         os.makedirs(user_results_dir(), exist_ok=True)
         script = worker_path_in_wsl().replace("worker.py", "validate.py")

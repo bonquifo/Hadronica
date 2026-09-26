@@ -1,6 +1,6 @@
 """Hadronica's PYTHIA mode against PYTHIA run directly (hep/compare/pythia_direct.cc).
 
-    ~/micromamba/envs/smlab-hep/bin/python hep/compare/pythia_direct.py [--scale 1.0]
+    ~/micromamba/envs/hadronica-hep/bin/python hep/compare/pythia_direct.py [--scale 1.0]
 
 For every leading-order validation benchmark, the PYTHIA settings are taken
 from Hadronica's own worker (so both runs configure PYTHIA identically; PYTHIA 8.3:
@@ -33,19 +33,19 @@ import validate  # noqa: E402
 
 ENV = sys.prefix
 CXX = os.path.join(ENV, "bin", "x86_64-conda-linux-gnu-g++")
-EXE = os.path.join(tempfile.gettempdir(), "smlab_pythia_direct")
+EXE = os.path.join(tempfile.gettempdir(), "hadronica_pythia_direct")
 LO_BENCHMARKS = ("lep_z_hadrons", "lhc_minbias", "lhc_z_pt", "lhc_ttbar", "lhc_jets")
 
 
 # conda-forge's fastjet-cxx 3.5.1 ships the library without C++ headers; hep/mg5/setup_mg5.sh
 # builds the same version (3.5.1) from source into the MadGraph environment, whose headers match.
-FASTJET_HEADERS = os.path.expanduser("~/micromamba/envs/smlab-mg5/include/fastjet")
+FASTJET_HEADERS = os.path.expanduser("~/micromamba/envs/hadronica-mg5/include/fastjet")
 
 
 def build() -> None:
     flags = subprocess.run([os.path.join(ENV, "bin", "rivet-config"), "--cppflags", "--ldflags", "--libs"],
                            capture_output=True, text=True, check=True).stdout.split()
-    includes = os.path.join(tempfile.gettempdir(), "smlab_fastjet_headers")
+    includes = os.path.join(tempfile.gettempdir(), "hadronica_fastjet_headers")
     os.makedirs(includes, exist_ok=True)
     link = os.path.join(includes, "fastjet")
     if not os.path.exists(link):
@@ -86,11 +86,11 @@ def run_direct(bench: dict, scale: float, work: str, seed_base: int = 424242) ->
     return merged
 
 
-def mc_vs_mc(smlab_file: str, direct_file: str) -> dict[str, tuple[float, int]]:
+def mc_vs_mc(hadronica_file: str, direct_file: str) -> dict[str, tuple[float, int]]:
     """χ²/ndf between the two MC histograms, with both statistical errors."""
     import yoda
 
-    a, b = yoda.read(smlab_file), yoda.read(direct_file)
+    a, b = yoda.read(hadronica_file), yoda.read(direct_file)
     out = {}
     for path, ao in a.items():
         if path.startswith("/RAW") or path not in b:
@@ -119,7 +119,7 @@ def main() -> None:
     build()
     results = json.load(open(os.path.join(HEP, "validation", "results.json"), encoding="utf-8"))["benchmarks"]
     report = {}
-    with tempfile.TemporaryDirectory(prefix="smlab-direct-") as work:
+    with tempfile.TemporaryDirectory(prefix="hadronica-direct-") as work:
         for bench in validate.BENCHMARKS:
             if bench["key"] not in LO_BENCHMARKS or (args.only and bench["key"] not in args.only):
                 continue
@@ -128,19 +128,19 @@ def main() -> None:
                 os.makedirs(args.keep, exist_ok=True)
                 subprocess.run(["cp", direct, args.keep], check=True)
             vs_data = {p["path"]: p["chi2_ndf"] for p in validate.compare(direct, bench["analyses"])}
-            smlab = {p["path"]: p["chi2_ndf"] for p in results[bench["key"]]["plots"]}
+            hadronica = {p["path"]: p["chi2_ndf"] for p in results[bench["key"]]["plots"]}
             between = mc_vs_mc(os.path.join(HEP, "validation", f"{bench['key']}.yoda"), direct)
             rows = []
-            for path in sorted(set(vs_data) & set(smlab)):
+            for path in sorted(set(vs_data) & set(hadronica)):
                 chi2, ndf = between.get(path, (float("nan"), 0))
-                rows.append({"path": path, "smlab_vs_data": smlab[path], "direct_vs_data": vs_data[path],
-                             "smlab_vs_direct": chi2, "ndf": ndf})
+                rows.append({"path": path, "hadronica_vs_data": hadronica[path], "direct_vs_data": vs_data[path],
+                             "hadronica_vs_direct": chi2, "ndf": ndf})
             all_between = [chi2 for chi2, _ndf in between.values()]
-            report[bench["key"]] = {"plots": rows, "median_smlab_vs_direct": validate._median(all_between),
+            report[bench["key"]] = {"plots": rows, "median_hadronica_vs_direct": validate._median(all_between),
                                     "n_mc_histograms": len(all_between)}
             med = lambda key: validate._median([r[key] for r in rows])  # noqa: E731
-            print(f"{bench['key']:15s} data χ²/ndf: Hadronica {med('smlab_vs_data'):.2f}  direct {med('direct_vs_data'):.2f}"
-                  f"   Hadronica vs direct: median χ²/ndf {report[bench['key']]['median_smlab_vs_direct']:.2f}"
+            print(f"{bench['key']:15s} data χ²/ndf: Hadronica {med('hadronica_vs_data'):.2f}  direct {med('direct_vs_data'):.2f}"
+                  f"   Hadronica vs direct: median χ²/ndf {report[bench['key']]['median_hadronica_vs_direct']:.2f}"
                   f" over {len(all_between)} histograms", flush=True)
     # A control run with other seeds must not overwrite the main comparison.
     name = "pythia_direct.json" if args.seed_base == 424242 else f"pythia_direct_seed{args.seed_base}.json"

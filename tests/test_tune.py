@@ -48,7 +48,7 @@ def test_quadratic_fit_reports_a_saddle_as_no_minimum():
 def test_app_requests_the_tune_only_for_samples_it_applies_to():
     import pygame
 
-    from smlab.app import LabApp
+    from hadronica.app import LabApp
 
     application = LabApp(size=(1480, 900), headless=True, seed=7)
     try:
@@ -62,7 +62,7 @@ def test_app_requests_the_tune_only_for_samples_it_applies_to():
         application.py_tune = {"name": "Hadronica-AZ 2026", "settings": {tune.KT: 1.5, tune.PT0: 1.2},
                                 "applies_to": ["dy_fxfx", "dy"]}
         config = application._py_config()
-        assert config["source"] == "nlo" and config["tune"] == "smlab"
+        assert config["source"] == "nlo" and config["tune"] == "hadronica"
         hash(application._py_key(config))
         application.py_process = "pp_ttbar"
         assert "tune" not in application._py_config()

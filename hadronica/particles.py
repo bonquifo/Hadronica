@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from smlab.constants import (
+from hadronica.constants import (
     C_TAU_MU_M,
     C_TAU_PI_M,
     C_TAU_TAU_M,

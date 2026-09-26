@@ -3,7 +3,7 @@
 #
 #   generate_nlo.sh <process: ttbar|dy|w> <sqrt_s in GeV> <events>
 #
-# Output: ~/smlab-cache/nlo/<process>_<sqrt_s>/events.lhe plus info.json with
+# Output: ~/hadronica-cache/nlo/<process>_<sqrt_s>/events.lhe plus info.json with
 # the NLO cross section, its statistical error, and the scale uncertainty.
 # Inputs follow PDG 2026: m_t = 172.60, M_Z = 91.1879, widths as listed, and
 # α⁻¹ = 132.04 chosen so the G_F scheme reproduces M_W = 80.3625 GeV at tree
@@ -13,9 +13,9 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 PROC="$1"
 SQRT_S="$2"
 NEVENTS="$3"
-M=$HOME/micromamba/envs/smlab-mg5
+M=$HOME/micromamba/envs/hadronica-mg5
 export PATH=$M/bin:$PATH
-OUT=$HOME/smlab-cache/nlo/${PROC}_${SQRT_S}
+OUT=$HOME/hadronica-cache/nlo/${PROC}_${SQRT_S}
 mkdir -p "$(dirname "$OUT")"
 EBEAM=$(python3 -c "print($SQRT_S / 2)")
 

@@ -1,6 +1,6 @@
 """Hadronica's built-in Born engine against MadGraph5_aMC@NLO at leading order.
 
-    ~/micromamba/envs/smlab-mg5/bin/python hep/compare/builtin_vs_madgraph.py [--events N]
+    ~/micromamba/envs/hadronica-mg5/bin/python hep/compare/builtin_vs_madgraph.py [--events N]
 
 MadGraph5_aMC@NLO (J. Alwall et al., JHEP 07 (2014) 079, arXiv:1405.0301; tree
 level, G_F scheme: α = 1/132.04, on-shell sin²θ_W = 1 − M_W²/M_Z², fixed-width propagators, no QCD factor, no ISR) is the reference. Hadronica's
@@ -34,12 +34,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, ROOT)
 
-from smlab import constants as C  # noqa: E402
-from smlab import electroweak as EW  # noqa: E402
-from smlab.generator import sigma_pb  # noqa: E402
-from smlab.processes import BEAMS, process_by_id  # noqa: E402
+from hadronica import constants as C  # noqa: E402
+from hadronica import electroweak as EW  # noqa: E402
+from hadronica.generator import sigma_pb  # noqa: E402
+from hadronica.processes import BEAMS, process_by_id  # noqa: E402
 
-MG5 = os.path.expanduser("~/micromamba/envs/smlab-mg5/bin/mg5_aMC")
+MG5 = os.path.expanduser("~/micromamba/envs/hadronica-mg5/bin/mg5_aMC")
 ALPHA_GF = 1.0 / 132.04
 M_W_GF = 80.3617  # derived by MadGraph from M_Z, G_F, α (see AUDIT_2026.md)
 SIN2_OS = 1.0 - (M_W_GF / C.M_Z) ** 2
@@ -152,7 +152,7 @@ def forward_backward(path: str) -> list[float]:
     return [afb, math.sqrt((1.0 - afb * afb) / n)]
 
 
-def smlab_values(pid: str, energy: float, matched: bool, scheme: str) -> dict:
+def hadronica_values(pid: str, energy: float, matched: bool, scheme: str) -> dict:
     """Hadronica's Born σ (no ISR) and, for μμ, A_FB; optionally in MadGraph's coupling scheme."""
     process = process_by_id(pid)
     saved = (EW.alpha_em, EW.SIN2_THETA_W, EW.qcd_factor)
@@ -176,7 +176,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--events", type=int, default=20000)
     args = parser.parse_args()
-    work = tempfile.mkdtemp(prefix="smlab-mg5-compare-")
+    work = tempfile.mkdtemp(prefix="hadronica-mg5-compare-")
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
             futures = {pool.submit(run_madgraph, pid, proc, energies, scheme, args.events, work): pid
@@ -188,18 +188,18 @@ def main() -> None:
     for pid, proc, energies, scheme in CASES:
         for energy in energies:
             mg = madgraph[pid][f"{energy:.4f}"]
-            matched = smlab_values(pid, energy, True, scheme)
-            shipped = smlab_values(pid, energy, False, scheme)
+            matched = hadronica_values(pid, energy, True, scheme)
+            shipped = hadronica_values(pid, energy, False, scheme)
             row = {
                 "process": pid, "madgraph_process": proc, "sqrt_s": energy, "scheme": scheme,
                 "madgraph_pb": mg["sigma_pb"], "madgraph_err_pb": mg["error_pb"],
-                "smlab_matched_pb": matched["sigma_pb"], "smlab_shipped_pb": shipped["sigma_pb"],
+                "hadronica_matched_pb": matched["sigma_pb"], "hadronica_shipped_pb": shipped["sigma_pb"],
                 "matched_ratio": matched["sigma_pb"] / mg["sigma_pb"],
                 "shipped_ratio": shipped["sigma_pb"] / mg["sigma_pb"],
             }
             if "afb" in mg:
                 row.update(madgraph_afb=mg["afb"][0], madgraph_afb_err=mg["afb"][1],
-                           smlab_matched_afb=matched["afb"], smlab_shipped_afb=shipped["afb"])
+                           hadronica_matched_afb=matched["afb"], hadronica_shipped_afb=shipped["afb"])
             rows.append(row)
             print(f"{pid:9s} {energy:7.2f} GeV  MG {mg['sigma_pb']:11.5g} ± {mg['error_pb']:.2g} pb   "
                   f"Hadronica matched {row['matched_ratio']:.4f}   shipped {row['shipped_ratio']:.4f}", flush=True)

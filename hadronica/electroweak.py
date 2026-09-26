@@ -40,7 +40,7 @@ import math
 
 import numpy as np
 
-from smlab.constants import (
+from hadronica.constants import (
     ALPHA,
     ALPHA_S_MZ,
     DALPHA_HAD5_MZ,
@@ -58,8 +58,8 @@ from smlab.constants import (
     SIN2_THETA_W,
     THETA_FIDUCIAL,
 )
-from smlab.kinematics import kallen, velocity_parameter
-from smlab.particles import color_count, species, weak_isospin
+from hadronica.kinematics import kallen, velocity_parameter
+from hadronica.particles import color_count, species, weak_isospin
 
 
 def alpha_em(s: float) -> float:
@@ -305,7 +305,7 @@ def _zh_lambda(s: float, m_h: float, m_z: float) -> float:
 
 def higgsstrahlung_sigma(sqrt_s: float, m_h: float | None = None, m_z: float | None = None) -> float:
     """Born σ(e+e- → ZH) in GeV^-2. Zero below the ZH threshold."""
-    from smlab.constants import M_H
+    from hadronica.constants import M_H
 
     m_h = M_H if m_h is None else m_h
     m_z = M_Z if m_z is None else m_z
@@ -331,7 +331,7 @@ def higgsstrahlung_density(cos_theta: float, sqrt_s: float, m_h: float | None = 
 
     Integrated against the prefactor below, this reproduces ``higgsstrahlung_sigma``.
     """
-    from smlab.constants import M_H
+    from hadronica.constants import M_H
 
     m_h = M_H if m_h is None else m_h
     s = sqrt_s * sqrt_s

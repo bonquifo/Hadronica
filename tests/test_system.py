@@ -20,11 +20,11 @@ import time
 import pygame
 import pytest
 
-from smlab.app import LabApp
-from smlab.constants import M_H, M_T, M_Z
-from smlab.engine import PythiaEngine, PythiaEvent, conservation, event_from_reply
-from smlab.processes import BEAMS, all_processes
-from smlab.report import register_species
+from hadronica.app import LabApp
+from hadronica.constants import M_H, M_T, M_Z
+from hadronica.engine import PythiaEngine, PythiaEvent, conservation, event_from_reply
+from hadronica.processes import BEAMS, all_processes
+from hadronica.report import register_species
 from tests.test_engine import _wsl_engine_available
 
 WSL = _wsl_engine_available()
@@ -87,7 +87,7 @@ def _picker_species(application) -> list[int]:
 
 def test_custom_collisions_of_every_offered_pair(app):
     """Supported exactly for the particle–antiparticle pairs of a modelled beam; √s is the invariant mass."""
-    from smlab.particles import species as species_info
+    from hadronica.particles import species as species_info
 
     rng = random.Random(4)
     offered = _picker_species(app)
@@ -159,7 +159,7 @@ def test_random_session_on_the_builtin_engine(app):
 
 @live
 def test_application_selftest_passes_in_process(app):
-    from smlab.selftest import SelfTest
+    from hadronica.selftest import SelfTest
 
     test = SelfTest(app)
     passed, _seconds = test.run()
@@ -172,7 +172,7 @@ PP_ENERGIES = (900.0, 7000.0, 13000.0, 13600.0, 14000.0)
 
 @live
 def test_every_pythia_process_at_every_preset():
-    from smlab.app_pythia import PY_THRESHOLDS
+    from hadronica.app_pythia import PY_THRESHOLDS
 
     bridge = PythiaEngine()
     bridge.start()

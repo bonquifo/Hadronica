@@ -8,11 +8,11 @@ from dataclasses import dataclass
 import numpy as np
 import pygame
 
-from smlab.generator import ConservationReport, Event
-from smlab.histogram import Histogram
-from smlab.particles import is_neutrino, is_quark, species
-from smlab.report import english_name
-from smlab.theme import (
+from hadronica.generator import ConservationReport, Event
+from hadronica.histogram import Histogram
+from hadronica.particles import is_neutrino, is_quark, species
+from hadronica.report import english_name
+from hadronica.theme import (
     BG,
     CYAN,
     DIM,
@@ -24,7 +24,7 @@ from smlab.theme import (
     mix,
     particle_color,
 )
-from smlab.tracks import track_polyline
+from hadronica.tracks import track_polyline
 
 OUTER_M = 7.15
 TRACKER_RADII = (0.12, 0.28, 0.48, 0.70, 0.92, 1.20)

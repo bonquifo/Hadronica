@@ -14,11 +14,11 @@ import sys
 import pygame
 import pytest
 
-from smlab import engine
-from smlab.engine import PythiaEngine, conservation, event_from_reply, worker_path_in_wsl
-from smlab.fullscene import build_traces, count_summary
-from smlab.lorentz import FourVector
-from smlab.report import english_name, proper_lifetime_s, register_species, symbol
+from hadronica import engine
+from hadronica.engine import PythiaEngine, conservation, event_from_reply, worker_path_in_wsl
+from hadronica.fullscene import build_traces, count_summary
+from hadronica.lorentz import FourVector
+from hadronica.report import english_name, proper_lifetime_s, register_species, symbol
 
 M_MU = 0.1056583755
 M_PI = 0.13957039
@@ -139,7 +139,7 @@ def test_worker_path_translates_to_wsl_and_follows_frozen_builds(monkeypatch):
 
 
 def test_pythia_panels_draw_a_full_event():
-    from smlab.app import LabApp
+    from hadronica.app import LabApp
 
     app = LabApp(size=(1480, 900), headless=True, seed=7)
     try:
@@ -184,7 +184,7 @@ def test_pythia_panels_draw_a_full_event():
 
 
 def _wsl_engine_available() -> bool:
-    if os.environ.get("SMLAB_TEST_WSL", "1") == "0" or sys.platform != "win32":
+    if os.environ.get("HADRONICA_TEST_WSL", "1") == "0" or sys.platform != "win32":
         return False
     try:
         probe = subprocess.run(

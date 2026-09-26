@@ -13,9 +13,9 @@ from dataclasses import dataclass
 
 import pygame
 
-from smlab.scene import ECAL, ECAL_HALF, HCAL, HCAL_HALF, MUONS, MUON_HALF, OUTER_M, TRACKER_HALF, TRACKER_RADII, Camera, _sector
-from smlab.theme import GOLD, mix
-from smlab.tracks import path_from_vertex
+from hadronica.scene import ECAL, ECAL_HALF, HCAL, HCAL_HALF, MUONS, MUON_HALF, OUTER_M, TRACKER_HALF, TRACKER_RADII, Camera, _sector
+from hadronica.theme import GOLD, mix
+from hadronica.tracks import path_from_vertex
 
 # Display thresholds (a real event display applies similar cuts).
 MIN_PT_CHARGED = 0.3  # GeV

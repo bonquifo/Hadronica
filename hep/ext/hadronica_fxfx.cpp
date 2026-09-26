@@ -31,7 +31,7 @@ void attach(Pythia8::Pythia& pythia) {
 
 }  // namespace
 
-PYBIND11_MODULE(smlab_fxfx, m) {
+PYBIND11_MODULE(hadronica_fxfx, m) {
     m.doc() = "PYTHIA 8 FxFx jet-matching hook for Hadronica";
     m.def("attach", &attach, "Attach the FxFx/MLM jet-matching user hook (before pythia.init()).");
 }

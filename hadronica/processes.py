@@ -7,8 +7,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from smlab.constants import M_H, M_Z, QUARK_CONTINUUM_GEV, THETA_FIDUCIAL
-from smlab.electroweak import (
+from hadronica.constants import M_H, M_Z, QUARK_CONTINUUM_GEV, THETA_FIDUCIAL
+from hadronica.electroweak import (
     bhabha_dsigma_domega,
     bhabha_sigma,
     diphoton_dsigma_domega,
@@ -21,7 +21,7 @@ from smlab.electroweak import (
     neutrino_w_dsigma_domega,
     neutrino_w_sigma,
 )
-from smlab.particles import is_quark, species
+from hadronica.particles import is_quark, species
 
 
 @dataclass(frozen=True, slots=True)

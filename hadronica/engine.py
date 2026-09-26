@@ -18,10 +18,10 @@ import sys
 import threading
 from dataclasses import dataclass, field
 
-from smlab.lorentz import FourVector
+from hadronica.lorentz import FourVector
 
-WSL_DISTRO = os.environ.get("SMLAB_WSL_DISTRO", "Ubuntu")
-ENV_PYTHON = os.environ.get("SMLAB_HEP_PYTHON", "~/micromamba/envs/smlab-hep/bin/python")
+WSL_DISTRO = os.environ.get("HADRONICA_WSL_DISTRO", "Ubuntu")
+ENV_PYTHON = os.environ.get("HADRONICA_HEP_PYTHON", "~/micromamba/envs/hadronica-hep/bin/python")
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -355,7 +355,7 @@ class PythiaEngine:
         except Exception as exc:
             self.state = "error"
             self.message = (
-                "PYTHIA is not available. It runs in WSL (Ubuntu) from ~/micromamba/envs/smlab-hep; "
+                "PYTHIA is not available. It runs in WSL (Ubuntu) from ~/micromamba/envs/hadronica-hep; "
                 f"run hep/setup_wsl.sh once. Details: {exc}"
             )
             self._results.put(("error", self.message))

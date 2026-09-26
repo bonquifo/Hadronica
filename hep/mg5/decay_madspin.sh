@@ -16,18 +16,18 @@
 # off-shell mode peaked at 173.03 GeV with twice as many tops above the pole as
 # below. On-shell decays avoid that 0.43 GeV bias; the 1.4 GeV top width they
 # drop is far below detector resolution.
-# Reads ~/smlab-cache/nlo/<sample>.mg5/Events/run_01/events.lhe[.gz] and writes
-# ~/smlab-cache/nlo/<sample>/events.lhe + info.json.
+# Reads ~/hadronica-cache/nlo/<sample>.mg5/Events/run_01/events.lhe[.gz] and writes
+# ~/hadronica-cache/nlo/<sample>/events.lhe + info.json.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 NAME="$1"
 GEN_SECONDS="${2:-0}"
-M=$HOME/micromamba/envs/smlab-mg5
+M=$HOME/micromamba/envs/hadronica-mg5
 export PATH=$M/bin:$PATH
 # MadSpin compiles its matrix elements with f2py, whose numpy.distutils backend
 # fails with setuptools >= 65; Python 3.11's own distutils still works.
 export SETUPTOOLS_USE_DISTUTILS=stdlib
-OUT=$HOME/smlab-cache/nlo/$NAME
+OUT=$HOME/hadronica-cache/nlo/$NAME
 RUN="$OUT.mg5/Events/run_01"
 PROC="${NAME%_*}"
 SQRT_S="${NAME##*_}"

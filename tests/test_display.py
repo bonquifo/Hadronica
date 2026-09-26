@@ -7,8 +7,8 @@ import math
 import pygame
 import pytest
 
-from smlab.app import APPROACH_SECONDS, LabApp
-from smlab.scene import Camera, approach_outer
+from hadronica.app import APPROACH_SECONDS, LabApp
+from hadronica.scene import Camera, approach_outer
 
 
 @pytest.fixture

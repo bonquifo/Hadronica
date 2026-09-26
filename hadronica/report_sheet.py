@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pygame
 
-from smlab.report import EnergyTimeline, english_name, format_duration, format_energy, outcome_line, report_cards
-from smlab.theme import (
+from hadronica.report import EnergyTimeline, english_name, format_duration, format_energy, outcome_line, report_cards
+from hadronica.theme import (
     ACCENT,
     BORDER_STRONG,
     DIM,

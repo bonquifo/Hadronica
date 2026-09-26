@@ -7,9 +7,9 @@ import math
 import pygame
 import pytest
 
-from smlab.app_pythia import _auto_hist
-from smlab.validation_view import grade_color, grouped, mc_limited
-from smlab.theme import BAD, GOOD, WARN
+from hadronica.app_pythia import _auto_hist
+from hadronica.validation_view import grade_color, grouped, mc_limited
+from hadronica.theme import BAD, GOOD, WARN
 
 
 def _plot(path, chi2, n=4):
@@ -62,8 +62,8 @@ def test_signed_weights_subtract_in_histograms():
 
 
 def test_validation_panel_draws_lo_and_nlo(monkeypatch):
-    from smlab import app as app_module
-    from smlab.app import LabApp
+    from hadronica import app as app_module
+    from hadronica.app import LabApp
 
     application = LabApp(size=(1480, 900), headless=True, seed=7)
     try:
@@ -85,7 +85,7 @@ def test_validation_panel_draws_lo_and_nlo(monkeypatch):
 
 
 def test_pileup_tracks_come_from_their_own_vertices():
-    from smlab.fullscene import build_traces
+    from hadronica.fullscene import build_traces
     from tests.test_engine import _parse
 
     event = _parse()
@@ -118,7 +118,7 @@ def test_plots_short_of_simulated_events_are_flagged():
 def test_a_partial_rerun_updates_its_entries_and_keeps_the_rest(tmp_path, monkeypatch):
     import json
 
-    from smlab import validation_view as view
+    from hadronica import validation_view as view
 
     bundled = {"generated": "2026-09-24 00:47", "benchmarks": {
         "lep_z_hadrons": {"benchmark": "lep_z_hadrons", "reference": "ALEPH, Phys. Rept. 294 (1998) 1", "median_chi2_ndf": 2.5},
@@ -151,3 +151,16 @@ def test_every_stored_result_carries_the_verified_citation():
     stored = json.load(open(os.path.join(root, "hep", "validation", "results.json"), encoding="utf-8"))["benchmarks"]
     for key, entry in stored.items():
         assert entry["reference"] == want[entry["benchmark"]], key
+
+
+def test_results_saved_under_the_old_name_move_to_the_hadronica_folder(tmp_path, monkeypatch):
+    from hadronica import validation_view as view
+
+    old = tmp_path / "SMLab" / "validation"
+    old.mkdir(parents=True)
+    (old / "results.json").write_text('{"benchmarks": {}}', encoding="utf-8")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    path = view.user_results_dir()
+    assert path == str(tmp_path / "Hadronica" / "validation")
+    assert (tmp_path / "Hadronica" / "validation" / "results.json").exists()
+    assert not (tmp_path / "SMLab").exists()

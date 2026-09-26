@@ -2,7 +2,7 @@
 
 Every assertion here compares with something outside the code under test: an
 exact expectation built into synthetic input, the PDG 2026 values in
-smlab/constants.py, an independent recomputation of stored results, or the
+hadronica/constants.py, an independent recomputation of stored results, or the
 numbers quoted in the documentation. None of these tests needs WSL.
 """
 
@@ -18,7 +18,7 @@ import sys
 
 import pytest
 
-from smlab import constants as C
+from hadronica import constants as C
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HEP = os.path.join(ROOT, "hep")
@@ -268,7 +268,7 @@ def test_tune_lies_inside_pythia_limits_and_beats_monash():
     assert all(row["bins"] == TUNE["monash"]["bins"] for row in TUNE["scan"])
 
 
-# -- Inputs agree with PDG 2026 (smlab/constants.py) -----------------------------
+# -- Inputs agree with PDG 2026 (hadronica/constants.py) -----------------------------
 
 def _pdg_overrides() -> dict[str, float]:
     tree = ast.parse(_read("hep", "worker.py"))
@@ -366,7 +366,7 @@ METHODS_CLAIMS = [  # numbers quoted in the in-app Methods text
 
 @pytest.mark.parametrize("key,quoted", METHODS_CLAIMS)
 def test_methods_text_quotes_the_stored_results(key, quoted):
-    from smlab.methods import METHODS
+    from hadronica.methods import METHODS
 
     decimals = len(quoted.split(".")[1])
     assert f"{RESULTS[key]['median_chi2_ndf']:.{decimals}f}" == quoted
@@ -378,7 +378,7 @@ def test_methods_text_quotes_the_stored_results(key, quoted):
 def test_every_bundled_file_exists():
     script = _read("build_exe.ps1")
     sources = re.findall(r'"([^";]+);[^"]+"', script)
-    assert "hep\\worker.py" in sources and "hep\\ext\\smlab_fxfx.cpp" in sources
+    assert "hep\\worker.py" in sources and "hep\\ext\\hadronica_fxfx.cpp" in sources
     for source in sources:
         assert os.path.exists(os.path.join(ROOT, source)), source
     # Scripts that the bundled scripts call must be bundled as well.
@@ -411,7 +411,7 @@ def _round7_claims() -> list[tuple[str, float, str]]:
                ("PYTHIA direct minbias", table["lhc_minbias"]["pythia_direct"], "36.7")]
     for key, quoted in (("lep_z_hadrons", "1.02"), ("lhc_minbias", "1.74"), ("lhc_z_pt", "1.00"),
                         ("lhc_ttbar", "0.70"), ("lhc_jets", "1.01")):
-        claims.append((f"Hadronica vs direct {key}", direct[key]["median_smlab_vs_direct"], quoted))
+        claims.append((f"Hadronica vs direct {key}", direct[key]["median_hadronica_vs_direct"], quoted))
     return claims
 
 
@@ -430,4 +430,4 @@ def test_builtin_engine_agrees_with_madgraph_in_the_same_scheme():
         tolerance = 3 * row["madgraph_err_pb"] / row["madgraph_pb"] + 1e-3
         assert abs(row["matched_ratio"] - 1.0) < tolerance, (row["process"], row["sqrt_s"], row["matched_ratio"])
         if "madgraph_afb" in row:
-            assert abs(row["smlab_matched_afb"] - row["madgraph_afb"]) < 3 * row["madgraph_afb_err"]
+            assert abs(row["hadronica_matched_afb"] - row["madgraph_afb"]) < 3 * row["madgraph_afb_err"]

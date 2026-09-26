@@ -9,7 +9,7 @@ import pytest
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ASSETS = os.path.join(ROOT, "smlab", "assets")
+ASSETS = os.path.join(ROOT, "hadronica", "assets")
 SIZES = (16, 20, 24, 32, 40, 48, 64, 96, 128, 256)
 
 
@@ -28,7 +28,7 @@ def test_exe_icon_has_every_size_windows_asks_for():
 
 
 def test_window_uses_the_generated_icon():
-    from smlab.app import LabApp
+    from hadronica.app import LabApp
 
     application = LabApp(size=(1480, 900), headless=True, seed=1)
     try:
@@ -47,8 +47,8 @@ def test_window_uses_the_generated_icon():
 def test_build_embeds_and_bundles_the_icon():
     with open(os.path.join(ROOT, "build_exe.ps1"), encoding="utf-8") as handle:
         script = handle.read()
-    assert '"--icon", "smlab\\assets\\icon.ico"' in script
-    assert "smlab\\assets\\window_icon.png;smlab\\assets" in script
+    assert '"--icon", "hadronica\\assets\\icon.ico"' in script
+    assert "hadronica\\assets\\window_icon.png;hadronica\\assets" in script
 
 
 @pytest.mark.parametrize("name", ["icon.ico", "icon.png", "window_icon.png"])

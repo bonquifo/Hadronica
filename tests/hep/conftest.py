@@ -1,4 +1,4 @@
-"""WSL-side tests: real PYTHIA 8, pyhepmc, and the MadGraph5_aMC@NLO samples in ~/smlab-cache."""
+"""WSL-side tests: real PYTHIA 8, pyhepmc, and the MadGraph5_aMC@NLO samples in ~/hadronica-cache."""
 
 import os
 import sys

@@ -1,6 +1,6 @@
 """The on-screen guide has to say what a control changes, not only what it is called."""
 
-from smlab.guide import GuideContext, collision_card, focus_card
+from hadronica.guide import GuideContext, collision_card, focus_card
 
 
 def _ctx(**overrides) -> GuideContext:

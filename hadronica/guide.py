@@ -5,10 +5,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from smlab.constants import M_H, M_Z, P_OVER_QRB, format_cross_section, format_energy
-from smlab.incoming import format_beta
-from smlab.particles import is_quark, species
-from smlab.processes import BEAMS
+from hadronica.constants import M_H, M_Z, P_OVER_QRB, format_cross_section, format_energy
+from hadronica.incoming import format_beta
+from hadronica.particles import is_quark, species
+from hadronica.processes import BEAMS
 
 _FATE = {
     "ecal": "stop in the blue ECAL",

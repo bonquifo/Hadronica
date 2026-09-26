@@ -1,6 +1,6 @@
 """Re-tune PYTHIA's non-perturbative initial-state parameters for Hadronica's NLO samples.
 
-    ~/micromamba/envs/smlab-hep/bin/python hep/tune.py [--events N] [--quick]
+    ~/micromamba/envs/hadronica-hep/bin/python hep/tune.py [--events N] [--quick]
 
 Method (after the ATLAS AZNLO tune, JHEP 09 (2014) 145): with the hard
 process and the first emission fixed at NLO (here the FxFx-merged Z + 0, 1, 2
@@ -167,7 +167,7 @@ def main() -> None:
     bench["events"] = events
     started = time.time()
     scan = []
-    with tempfile.TemporaryDirectory(prefix="smlab-tune-") as work:
+    with tempfile.TemporaryDirectory(prefix="hadronica-tune-") as work:
         validate.OUT_DIR = work
         points = [dict(zip(grid, values)) for values in itertools.product(*grid.values())]
         for settings in [dict(MONASH)] + points:

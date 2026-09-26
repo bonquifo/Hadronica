@@ -17,7 +17,7 @@ import os
 import pytest
 
 from hep_paths import ROOT, sample_path
-from smlab import constants as C
+from hadronica import constants as C
 
 
 def _info(name: str) -> dict:
@@ -41,9 +41,9 @@ def _fxfx_run(n: int, sqrt_s: float = 13000.0):
 def test_without_the_matching_hook_nothing_is_merged(monkeypatch):
     # The control: PYTHIA's JetMatching settings alone do nothing from Python.
     sample_path("dy_fxfx_13000")
-    import smlab_fxfx
+    import hadronica_fxfx
 
-    monkeypatch.setattr(smlab_fxfx, "attach", lambda pythia: None)
+    monkeypatch.setattr(hadronica_fxfx, "attach", lambda pythia: None)
     reply, tried, accepted = _fxfx_run(300)
     assert tried == accepted
     lhe_sigma = _info("dy_fxfx_13000")["sigma_pb"]

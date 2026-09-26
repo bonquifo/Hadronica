@@ -1,6 +1,6 @@
 """Hadronica's validation benchmarks run with the other general-purpose generators, Sherpa and Herwig.
 
-    ~/micromamba/envs/smlab-hep/bin/python hep/compare/other_generators.py sherpa|herwig [--scale 1.0]
+    ~/micromamba/envs/hadronica-hep/bin/python hep/compare/other_generators.py sherpa|herwig [--scale 1.0]
 
 Each generator writes HepMC3 events into a named pipe that Hadronica's Rivet
 reads, in parallel chunks with independent seeds; the chunks are merged with
@@ -34,7 +34,7 @@ sys.path.insert(0, HEP)
 import validate  # noqa: E402
 
 RIVET_BIN = os.path.join(sys.prefix, "bin")
-SHERPA = os.path.expanduser("~/micromamba/envs/smlab-sherpa/bin/Sherpa")
+SHERPA = os.path.expanduser("~/micromamba/envs/hadronica-sherpa/bin/Sherpa")
 HERWIG_PREFIX = os.path.expanduser("~/herwig/install")
 
 # Generator runs: (run key, benchmarks it serves, events). The t t̄ sample feeds both t t̄ analyses.
@@ -226,7 +226,7 @@ def herwig_prepare(run_key: str, base: str) -> None:
         handle.write(HERWIG_INPUTS[run_key]
                      + "read snippets/HepMC.in\nset /Herwig/Analysis/HepMC:Filename events\n"
                      + "set /Herwig/Analysis/HepMC:PrintEvent 100000000\n"
-                     + "cd /Herwig/Generators\nsaverun smlab EventGenerator\n")
+                     + "cd /Herwig/Generators\nsaverun hadronica EventGenerator\n")
     with open(os.path.join(base, "read.log"), "w", encoding="utf-8") as log:
         subprocess.run([os.path.join(HERWIG_PREFIX, "bin", "Herwig"), "read", "run.in"], cwd=base,
                        env=_herwig_env(), stdout=log, stderr=subprocess.STDOUT, check=True)
@@ -234,7 +234,7 @@ def herwig_prepare(run_key: str, base: str) -> None:
 
 def herwig_chunk(run_key: str, base: str, directory: str, n: int, seed: int) -> list[str]:
     shutil.copytree(base, directory, ignore=shutil.ignore_patterns("*.log"))
-    return [os.path.join(HERWIG_PREFIX, "bin", "Herwig"), "run", "smlab.run", "-N", str(n), "-s", str(seed), "-q"]
+    return [os.path.join(HERWIG_PREFIX, "bin", "Herwig"), "run", "hadronica.run", "-N", str(n), "-s", str(seed), "-q"]
 
 
 GENERATORS = {"sherpa": (sherpa_prepare, sherpa_chunk), "herwig": (herwig_prepare, herwig_chunk)}
@@ -285,7 +285,7 @@ def main() -> None:
         if args.only and run_key not in args.only:
             continue
         started = time.time()
-        with tempfile.TemporaryDirectory(prefix=f"smlab-{args.generator}-{run_key}-") as work:
+        with tempfile.TemporaryDirectory(prefix=f"hadronica-{args.generator}-{run_key}-") as work:
             merged = run(args.generator, run_key, max(200, int(events * args.scale)), work)
         for bench in validate.BENCHMARKS:
             if bench["key"] not in benches:

@@ -1,6 +1,6 @@
 """Launch the Standard Model Collision Laboratory."""
 
-from smlab.app import main
+from hadronica.app import main
 
 if __name__ == "__main__":
     main()

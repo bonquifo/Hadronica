@@ -1,4 +1,4 @@
-"""Generate Hadronica's icons: smlab/assets/icon.ico (the exe), window_icon.png (the window), icon.png (512 px).
+"""Generate Hadronica's icons: hadronica/assets/icon.ico (the exe), window_icon.png (the window), icon.png (512 px).
 
     python tools/make_icon.py
 
@@ -19,9 +19,9 @@ import os
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "smlab", "assets")
+OUT = os.path.join(ROOT, "hadronica", "assets")
 
-# smlab/theme.py
+# hadronica/theme.py
 BG = (10, 13, 21)
 RIM = (30, 38, 58)
 ACCENT = (92, 168, 255)

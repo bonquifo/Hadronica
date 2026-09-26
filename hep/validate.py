@@ -1,6 +1,6 @@
 """Validate Hadronica's PYTHIA (and MadGraph) events against published data with Rivet.
 
-    ~/micromamba/envs/smlab-hep/bin/python hep/validate.py [--quick] [--only KEY ...]
+    ~/micromamba/envs/hadronica-hep/bin/python hep/validate.py [--quick] [--only KEY ...]
 
 Each benchmark generates events in parallel chunks (one per CPU core, each with
 its own seed), streams them as HepMC3 through a named pipe into Rivet, merges
@@ -322,7 +322,7 @@ def run(bench: dict, scale: float, source: dict | None = None, label: str = "PYT
     workers = max(1, min(mp.cpu_count() - 2, 30))
     plan = chunk_plan(n_total, workers, lhe_events)
     started = time.time()
-    with tempfile.TemporaryDirectory(prefix=f"smlab-rivet-{bench['key']}-") as work:
+    with tempfile.TemporaryDirectory(prefix=f"hadronica-rivet-{bench['key']}-") as work:
         jobs = []
         for i, (n, offset) in enumerate(plan):
             chunk_source = {**source, "lhef_skip": offset} if source else None

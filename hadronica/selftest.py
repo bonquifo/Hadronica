@@ -42,8 +42,8 @@ class SelfTest:
     # -- built-in engine ---------------------------------------------------
 
     def builtin(self) -> None:
-        from smlab.app import PRESETS
-        from smlab.processes import BEAMS, all_processes
+        from hadronica.app import PRESETS
+        from hadronica.processes import BEAMS, all_processes
 
         app = self.app
         app._activate("engine", "builtin", (0, 0))
@@ -82,7 +82,7 @@ class SelfTest:
 
     def collide(self, name: str, beam: str, process: str, energy: float, **options) -> dict | None:
         """Generate one event through the GUI path; returns the config it used, or None on failure."""
-        from smlab.engine import PythiaEvent
+        from hadronica.engine import PythiaEvent
 
         app = self.app
         app.py_beam = beam
@@ -126,7 +126,7 @@ class SelfTest:
         z_nlo = self.collide("pp → Z NLO (FxFx) with the Hadronica tune", "pp", "pp_z_ll", 13600.0)
         if app.py_nlo_samples.get("pp_z_ll@13600"):
             self.check("NLO mode used the MC@NLO sample and the tune", bool(z_nlo) and z_nlo.get("source") == "nlo"
-                       and (z_nlo.get("tune") == "smlab" or not app.py_tune), str(z_nlo))
+                       and (z_nlo.get("tune") == "hadronica" or not app.py_tune), str(z_nlo))
         self.collide("pp → t t̄ NLO + MadSpin, CMS detector, pileup μ = 60", "pp", "pp_ttbar", 13600.0,
                      detector=True, pileup=60)
 
@@ -145,7 +145,7 @@ class SelfTest:
 def run_selftest(report_path: str) -> int:
     os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
     os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
-    from smlab.app import LabApp
+    from hadronica.app import LabApp
 
     app = LabApp(size=(1480, 900), headless=True, seed=11)
     test = SelfTest(app)

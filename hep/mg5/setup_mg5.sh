@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # One-time MadGraph5_aMC@NLO setup: NLO loop libraries and the NLO PDF set.
 set -euo pipefail
-M=$HOME/micromamba/envs/smlab-mg5
-H=$HOME/micromamba/envs/smlab-hep
+M=$HOME/micromamba/envs/hadronica-mg5
+H=$HOME/micromamba/envs/hadronica-hep
 export PATH=$M/bin:$PATH
 for env in $M $H; do
     DATA="$($env/bin/lhapdf-config --datadir)"
@@ -15,7 +15,7 @@ done
 # gfortran 15 rejects at run time; pin the gcc/gfortran 13 series it is tested
 # with. Loop libraries built by another compiler are rebuilt below.
 if ! "$M/bin/gfortran" --version 2>/dev/null | grep -q " 13\." || [ ! -x "$M/bin/mg5_aMC" ]; then
-    MAMBA_ROOT_PREFIX=$HOME/micromamba $HOME/.local/bin/micromamba install -y -q -n smlab-mg5 -c conda-forge         mg5amcnlo "gfortran=13" "gcc=13" "gxx=13"
+    MAMBA_ROOT_PREFIX=$HOME/micromamba $HOME/.local/bin/micromamba install -y -q -n hadronica-mg5 -c conda-forge         mg5amcnlo "gfortran=13" "gcc=13" "gxx=13"
     rm -rf "$M/MG5_aMC/HEPTools/ninja" "$M/MG5_aMC/HEPTools/collier" "$M/MG5_aMC/HEPTools/oneloop"         "$M/MG5_aMC/HEPTools/lib"
 fi
 # The loop libraries must all be present (MadGraph looks for them in HEPTools/lib).

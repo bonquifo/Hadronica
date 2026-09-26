@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # One-time setup of the research-grade engines for Hadronica, inside WSL (Ubuntu).
 # Installs micromamba in ~/.local/bin and two conda-forge environments:
-#   smlab-hep  PYTHIA 8.3, LHAPDF 6, HepMC3 (+ pyhepmc), FastJet, Delphes 3.5
+#   hadronica-hep  PYTHIA 8.3, LHAPDF 6, HepMC3 (+ pyhepmc), FastJet, Delphes 3.5
 #              with ROOT, uproot, Rivet 4.1 and YODA 2
-#   smlab-mg5  MadGraph5_aMC@NLO 3.5 with gcc/gfortran 13, FastJet, and the
+#   hadronica-mg5  MadGraph5_aMC@NLO 3.5 with gcc/gfortran 13, FastJet, and the
 #              NLO loop libraries (see mg5/setup_mg5.sh)
 # No sudo is needed.
 #
@@ -16,22 +16,22 @@ if [ ! -x "$MM" ]; then
     mkdir -p "$HOME/.local"
     (cd "$HOME/.local" && curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj bin/micromamba)
 fi
-if [ ! -x "$MAMBA_ROOT_PREFIX/envs/smlab-hep/bin/python" ]; then
-    "$MM" create -y -n smlab-hep -c conda-forge python=3.12 pythia8 lhapdf hepmc3 fastjet delphes uproot numpy         rivet yoda pyhepmc
+if [ ! -x "$MAMBA_ROOT_PREFIX/envs/hadronica-hep/bin/python" ]; then
+    "$MM" create -y -n hadronica-hep -c conda-forge python=3.12 pythia8 lhapdf hepmc3 fastjet delphes uproot numpy         rivet yoda pyhepmc
 fi
-if [ ! -x "$MAMBA_ROOT_PREFIX/envs/smlab-hep/bin/rivet" ]; then
-    "$MM" install -y -n smlab-hep -c conda-forge rivet yoda pyhepmc
+if [ ! -x "$MAMBA_ROOT_PREFIX/envs/hadronica-hep/bin/rivet" ]; then
+    "$MM" install -y -n hadronica-hep -c conda-forge rivet yoda pyhepmc
 fi
 # pytest runs the WSL-side test suite (tests/hep), driven by tests/test_wsl_suite.py.
-"$MAMBA_ROOT_PREFIX/envs/smlab-hep/bin/python" -m pip install -q pytest
-if [ ! -d "$MAMBA_ROOT_PREFIX/envs/smlab-mg5" ]; then
-    "$MM" create -y -n smlab-mg5 -c conda-forge python=3.11 mg5amcnlo lhapdf "gfortran=13" "gcc=13" "gxx=13"         make cmake six
+"$MAMBA_ROOT_PREFIX/envs/hadronica-hep/bin/python" -m pip install -q pytest
+if [ ! -d "$MAMBA_ROOT_PREFIX/envs/hadronica-mg5" ]; then
+    "$MM" create -y -n hadronica-mg5 -c conda-forge python=3.11 mg5amcnlo lhapdf "gfortran=13" "gcc=13" "gxx=13"         make cmake six
 fi
 bash "$(dirname "$0")/mg5/setup_mg5.sh"
 
 # LHAPDF sets are optional (PYTHIA's Monash tune uses its built-in NNPDF2.3 LO).
 # Fetch one modern NNLO set for users who want to switch.
-ENV="$MAMBA_ROOT_PREFIX/envs/smlab-hep"
+ENV="$MAMBA_ROOT_PREFIX/envs/hadronica-hep"
 DATA="$("$ENV/bin/lhapdf-config" --datadir)"
 if [ ! -d "$DATA/NNPDF31_nnlo_as_0118" ]; then
     curl -Ls "https://lhapdfsets.web.cern.ch/current/NNPDF31_nnlo_as_0118.tar.gz" | tar -xz -C "$DATA" || \

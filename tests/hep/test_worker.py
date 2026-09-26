@@ -8,8 +8,8 @@ import os
 import pytest
 
 import worker
-from smlab import constants as C
-from worker import Worker, nlo_samples, smlab_tune
+from hadronica import constants as C
+from worker import Worker, nlo_samples, hadronica_tune
 
 TUNE_PATH = os.path.join(os.path.dirname(worker.__file__), "validation", "tune.json")
 
@@ -63,15 +63,15 @@ def test_generated_lo_events_conserve_four_momentum():
     assert all(_conserves(event["particles"]) for event in reply["events"])
 
 
-def test_the_smlab_tune_is_applied_last_and_only_at_nlo():
+def test_the_hadronica_tune_is_applied_last_and_only_at_nlo():
     tune = json.load(open(TUNE_PATH, encoding="utf-8"))
     expected = [f"{key} = {value}" for key, value in tune["settings"].items()]
-    lo = Worker().init({"beams": "pp", "process": "pp_z_ll", "sqrt_s": 13000.0, "seed": 1, "tune": "smlab"})
+    lo = Worker().init({"beams": "pp", "process": "pp_z_ll", "sqrt_s": 13000.0, "seed": 1, "tune": "hadronica"})
     assert not any(line in lo["settings"] for line in expected)  # Monash at leading order
     if "pp_z_ll@13000" not in nlo_samples():
         pytest.skip("no NLO Z sample")
     nlo = Worker().init({"beams": "pp", "process": "pp_z_ll", "sqrt_s": 13000.0, "seed": 1, "source": "nlo",
-                         "tune": "smlab"})["settings"]
+                         "tune": "hadronica"})["settings"]
     # After every other setting (only the random seed follows), so nothing overrides it.
     assert nlo[-2 - len(expected):-2] == expected
     assert nlo[-2].startswith("Random:setSeed")
@@ -83,7 +83,7 @@ def test_an_explicit_tune_dictionary_overrides_pythia_defaults():
 
 
 def test_hello_reports_the_tune_the_app_will_offer():
-    tune = smlab_tune()
+    tune = hadronica_tune()
     stored = json.load(open(TUNE_PATH, encoding="utf-8"))
     assert tune["settings"] == stored["settings"] and tune["name"] == stored["name"]
 

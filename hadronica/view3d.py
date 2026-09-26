@@ -7,9 +7,9 @@ from dataclasses import dataclass
 
 import pygame
 
-from smlab.particles import is_neutrino, species
-from smlab.report import english_name
-from smlab.scene import (
+from hadronica.particles import is_neutrino, species
+from hadronica.report import english_name
+from hadronica.scene import (
     ECAL,
     ECAL_HALF,
     HCAL,
@@ -22,8 +22,8 @@ from smlab.scene import (
     TRACKER_RADII,
     stop_radius,
 )
-from smlab.theme import GOLD, particle_color
-from smlab.tracks import track_helix
+from hadronica.theme import GOLD, particle_color
+from hadronica.tracks import track_helix
 
 
 @dataclass
@@ -260,7 +260,7 @@ def _dot(surf, projected, color) -> None:
 
 
 def draw_full_event_3d(surf, rect, orbit: Orbit, event, traces, fraction: float, font, flash: float) -> None:
-    """The barrel and a PYTHIA event's traces (see smlab.fullscene) in perspective."""
+    """The barrel and a PYTHIA event's traces (see hadronica.fullscene) in perspective."""
     _barrel(surf, rect, orbit)
     fraction = max(0.0, min(1.0, fraction))
     for trace in traces:

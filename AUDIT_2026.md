@@ -1,6 +1,6 @@
-# SMLab physics audit and UI rebuild (September 2026)
+# Hadronica physics audit and UI rebuild (September 2026)
 
-> **Renamed.** On 25 September 2026 the application was renamed **Hadronica** (still subtitled Standard Model Collision Laboratory). The rounds below keep the name it had when they were written: "SMLab" is Hadronica, and the "SMLab-AZ 2026" shower tune is now "Hadronica-AZ 2026".
+> **Renamed.** Until 25 September 2026 the application was called SMLab; this document now uses its current name, Hadronica (still subtitled Standard Model Collision Laboratory). The original code in `_original_backup/` keeps the old name.
 
 The original Grok-built code is preserved in `_original_backup/`.
 
@@ -11,7 +11,7 @@ The app cited the 2024 Review of Particle Physics. The 2026 edition is published
 - F. Takahashi et al. (Particle Data Group), Int. J. Mod. Phys. A 41, 2630011 (2026).
 - CODATA 2022.
 
-Each value in `smlab/constants.py` carries its source.
+Each value in `hadronica/constants.py` carries its source.
 
 | Quantity | Was | Now |
 |---|---|---|
@@ -60,7 +60,7 @@ Everything here is leading order. The "NOT INCLUDED" section of Methods lists wh
 
 # Round 2: research-grade engines (September 2026)
 
-A **PYTHIA 8.3** switch in the top bar replaces the built-in leading-order generator with the programs used in LHC and future-collider studies. They run in WSL (Ubuntu), in a conda-forge environment at `~/micromamba/envs/smlab-hep`.
+A **PYTHIA 8.3** switch in the top bar replaces the built-in leading-order generator with the programs used in LHC and future-collider studies. They run in WSL (Ubuntu), in a conda-forge environment at `~/micromamba/envs/hadronica-hep`.
 
 | Component | Version | Role | Reference |
 |---|---|---|---|
@@ -82,9 +82,9 @@ It installs micromamba and the environment. It also fetches two Delphes card inc
 **How it fits together.**
 - `hep/worker.py` is the WSL-side worker; it speaks JSON lines.
 - `hep/detector.py` converts events to HepMC3 and runs Delphes.
-- `smlab/engine.py` is the Windows-side bridge; it runs on a background thread.
-- `smlab/app_pythia.py` holds the PYTHIA panels.
-- `smlab/fullscene.py` draws full events: tracks from their true production vertices, displaced K⁰_S/Λ/heavy-flavour decays, calorimeter towers, jets, and missing momentum.
+- `hadronica/engine.py` is the Windows-side bridge; it runs on a background thread.
+- `hadronica/app_pythia.py` holds the PYTHIA panels.
+- `hadronica/fullscene.py` draws full events: tracks from their true production vertices, displaced K⁰_S/Λ/heavy-flavour decays, calorimeter towers, jets, and missing momentum.
 
 **Checks.**
 
@@ -203,14 +203,14 @@ These three steps address what Round 3 left open:
 
 **A fix it needed.** PYTHIA's `JetMatching:*` settings act only through the `JetMatchingMadgraph` user hook, and the Python bindings do not expose it. Without the hook the settings are silently ignored and the sample is showered unmerged: σ came out at 6.66 nb with no vetoes.
 
-`hep/ext/smlab_fxfx.cpp` is a 30-line pybind11 module, built by `hep/ext/build_fxfx.sh` and called from `setup_wsl.sh`. It attaches PYTHIA's own `CombineMatchingInput` hook to the Python `Pythia` object, exactly as PYTHIA's FxFx example program does. The module shares pybind11 internals v12 with `pythia8.so`.
+`hep/ext/hadronica_fxfx.cpp` is a 30-line pybind11 module, built by `hep/ext/build_fxfx.sh` and called from `setup_wsl.sh`. It attaches PYTHIA's own `CombineMatchingInput` hook to the Python `Pythia` object, exactly as PYTHIA's FxFx example program does. The module shares pybind11 internals v12 with `pythia8.so`.
 
 **Safeguards.**
 - If the module is missing, the worker hides FxFx samples rather than showering them unmerged.
 - **Chunk spacing.** About 56 % of LHE events are vetoed (4502 read per 2000 accepted). Validation chunks therefore start at evenly spaced positions in the LHE file, and at most 40 % of the file is used, so no event is showered twice.
 - **Displayed σ.** For FxFx, MadGraph's σ is before merging, so the app and validation use PYTHIA's merged σ after the veto: 4.20 nb for m_ℓℓ > 60 GeV, e + μ (60 000 events; 4.19 nb with the tune, since the veto depends on the shower).
 
-## Shower tune SMLab-AZ 2026 (method: ATLAS AZNLO, JHEP 09 (2014) 145)
+## Shower tune Hadronica-AZ 2026 (method: ATLAS AZNLO, JHEP 09 (2014) 145)
 
 **What is fitted.** `hep/tune.py` scans `BeamRemnants:primordialKThard` × `SpaceShower:pT0Ref` on the FxFx sample:
 - 60 000 showered events per point
@@ -230,7 +230,7 @@ These three steps address what Round 3 left open:
 
 **Interpretation.** The 3 GeV kT is an effective parameter. It also absorbs soft radiation missing from a shower run with MadGraph's MC@NLO settings, which use one-loop α_s = 0.118 and no CMW scheme.
 
-**Where it applies.** The worker applies the tune to every NLO sample. The app has a switch for it, "SMLab-AZ 2026 shower tune", on by default. It is never applied at leading order, where Monash applies.
+**Where it applies.** The worker applies the tune to every NLO sample. The app has a switch for it, "Hadronica-AZ 2026 shower tune", on by default. It is never applied at leading order, where Monash applies.
 
 Superseded for t t̄ by Round 5 (corrected widths and on-shell MadSpin decays); the Z rows are unchanged.
 
@@ -264,7 +264,7 @@ The Z pT result is not an independent test, because its low-pT part was fitted. 
 
 # Round 5: an objective test suite, and what it found (September 2026)
 
-The research-grade stack from Rounds 2–4 had almost no tests. The new tests compare against things outside the code: exact expectations built into synthetic inputs, the PDG 2026 values in `smlab/constants.py`, independent physics references, and independent recomputations of stored results.
+The research-grade stack from Rounds 2–4 had almost no tests. The new tests compare against things outside the code: exact expectations built into synthetic inputs, the PDG 2026 values in `hadronica/constants.py`, independent physics references, and independent recomputations of stored results.
 
 **How it runs.** `python -m pytest` runs both halves:
 - **Windows side:** `tests/test_hep_tools.py` plus the app tests.
@@ -294,7 +294,7 @@ The research-grade stack from Rounds 2–4 had almost no tests. The new tests co
 
 ## Corrected results (all benchmarks rerun with the width fix and the on-shell t t̄ samples)
 
-| Benchmark | LO | MC@NLO | NLO + MadSpin | FxFx | + SMLab tune |
+| Benchmark | LO | MC@NLO | NLO + MadSpin | FxFx | + Hadronica tune |
 |---|---|---|---|---|---|
 | CMS t t̄ event variables | 7.92 | 2.51 | 2.01 | — | 1.82 |
 | ATLAS eμ t t̄ (all 40 plots MC limited) | 11.34 | 1.50 | 0.97 | — | 1.19 |
@@ -339,14 +339,14 @@ The earlier rounds test components. This round tests the application the way a u
 
 ## The shipped executable tests itself
 
-`SMLab.exe --selftest [report.json]` runs the real application headless and writes a JSON report; the exit code is 0 only if every check passes. It covers:
+`Hadronica.exe --selftest [report.json]` runs the real application headless and writes a JSON report; the exit code is 0 only if every check passes. It covers:
 - **The built-in engine:** every beam, preset and process, 636 events.
 - **The PYTHIA engine**, started through the GUI's own bridge from the files bundled in the exe:
   - e⁺e⁻ → Z → hadrons at the Z pole
   - e⁺e⁻ → ZH at 240 GeV with the IDEA detector
   - μ⁺μ⁻ → t t̄ at 3 TeV with the muon-collider detector
   - pp → H → 4ℓ at 13.6 TeV
-  - pp → Z at NLO (FxFx) with the SMLab tune
+  - pp → Z at NLO (FxFx) with the Hadronica tune
   - pp → t t̄ at NLO + MadSpin with the CMS detector and pileup μ = 60
 - **Every event** must conserve four-momentum and charge, and every panel and view is drawn.
 
@@ -365,7 +365,7 @@ The earlier rounds test components. This round tests the application the way a u
 - **Every PYTHIA process at every preset energy**, for e⁺e⁻, μ⁺μ⁻ and pp: about 150 configurations through the GUI's bridge. Every event conserves, and every σ is positive and finite.
 - **PYTHIA cross sections against references fixed in advance** (`tests/hep/test_cross_sections.py`, 2500 events each):
 
-| Process | SMLab (PYTHIA) | Reference |
+| Process | Hadronica (PYTHIA) | Reference |
 |---|---|---|
 | e⁺e⁻ → Z → hadrons, peak with ISR | 30.29 ± 0.30 nb | ≈ 30.5 nb: σ⁰_had = 41.480 nb (PDG 2026) lowered about 25 % by initial-state radiation |
 | e⁺e⁻ → W⁺W⁻, 200 GeV | 17.33 ± 0.15 pb | 17.0 pb predicted (RacoonWW/YFSWW); LEP measured 16.77 ± 0.29 pb at 199.5 GeV |
@@ -383,7 +383,7 @@ Everything else behaved correctly under these tests.
 
 # Round 7: comparison with the established generators (September 2026)
 
-SMLab's research mode is itself built on PYTHIA 8, MadGraph5_aMC@NLO, Delphes and Rivet. The comparison therefore has three parts, all reproducible with the scripts in `hep/compare/`.
+Hadronica's research mode is itself built on PYTHIA 8, MadGraph5_aMC@NLO, Delphes and Rivet. The comparison therefore has three parts, all reproducible with the scripts in `hep/compare/`.
 
 **References for the generators compared.**
 - MadGraph5_aMC@NLO: J. Alwall et al., JHEP 07 (2014) 079, arXiv:1405.0301.
@@ -394,15 +394,15 @@ SMLab's research mode is itself built on PYTHIA 8, MadGraph5_aMC@NLO, Delphes an
 
 ## 1. The built-in engine against MadGraph5_aMC@NLO
 
-`builtin_vs_madgraph.py` compares SMLab's own Born engine with MadGraph at leading order, for 11 processes at 25 energy points, with ISR off. The processes are μμ, ττ, uū, dd̄, bb̄, tt̄, ν_μν̄_μ, ν_eν̄_e (with W exchange), ZH, Bhabha and γγ.
+`builtin_vs_madgraph.py` compares Hadronica's own Born engine with MadGraph at leading order, for 11 processes at 25 energy points, with ISR off. The processes are μμ, ττ, uū, dd̄, bb̄, tt̄, ν_μν̄_μ, ν_eν̄_e (with W exchange), ZH, Bhabha and γγ.
 
-**Implementation check.** With SMLab's couplings switched to MadGraph's scheme (α = 1/132.04, on-shell sin²θ_W, no QCD factor):
+**Implementation check.** With Hadronica's couplings switched to MadGraph's scheme (α = 1/132.04, on-shell sin²θ_W, no QCD factor):
 - every cross section agrees to within **0.13 %**;
 - the forward–backward asymmetries of e⁺e⁻ → μ⁺μ⁻ agree within MadGraph's statistical errors (pulls −1.4, −0.7, −0.2, +0.9).
 
 This verifies the formulas: the γ/Z interference, the massive-fermion thresholds, the t-channel W, ZH, and the QED processes with the angular cut.
 
-**As shipped.** SMLab's improved Born choices differ from MadGraph's tree level by a few percent, all explained:
+**As shipped.** Hadronica's improved Born choices differ from MadGraph's tree level by a few percent, all explained:
 
 | Difference | Cause |
 |---|---|
@@ -412,15 +412,15 @@ This verifies the formulas: the γ/Z interference, the massive-fermion threshold
 
 At the Z pole these choices give A_FB(μμ) = 0.0161, close to LEP's measured 0.0169 ± 0.0013 (A_FB^(0,μ), PDG 2026 Electroweak review, Table 10.3, whose SM prediction is 0.01618 ± 0.00006). MadGraph's tree-level scheme gives 0.038.
 
-## 2. SMLab's PYTHIA mode against PYTHIA run directly
+## 2. Hadronica's PYTHIA mode against PYTHIA run directly
 
-`pythia_direct.py` and `pythia_direct.cc` feed the settings from SMLab's worker to a stand-alone C++ PYTHIA program. That program converts events with PYTHIA's own HepMC3 interface and analyses them with a Rivet 4 handler, bypassing SMLab's bridge, serialization, HepMC conversion and weight handling.
+`pythia_direct.py` and `pythia_direct.cc` feed the settings from Hadronica's worker to a stand-alone C++ PYTHIA program. That program converts events with PYTHIA's own HepMC3 interface and analyses them with a Rivet 4 handler, bypassing Hadronica's bridge, serialization, HepMC conversion and weight handling.
 
-**Identical events.** For the same events (same seed, 20 000 minimum-bias events), SMLab's path and PYTHIA's path give **bit-identical** Rivet histograms.
+**Identical events.** For the same events (same seed, 20 000 minimum-bias events), Hadronica's path and PYTHIA's path give **bit-identical** Rivet histograms.
 
 **Independent seeds.** Over the five leading-order benchmarks, the MC-to-MC median χ²/ndf is 1.02 (LEP), 1.74 (minimum bias), 1.00 (Z pT), 0.70 (t t̄) and 1.01 (jets).
 - The minimum-bias value reflects strongly correlated bins: a direct-against-direct control with two different seeds gives 1.14 on the same metric.
-- With the identical-events result above, that shows SMLab's layers change nothing.
+- With the identical-events result above, that shows Hadronica's layers change nothing.
 
 ## 3. Against Herwig 7.3 and Sherpa 3.0
 
@@ -436,7 +436,7 @@ At the Z pole these choices give A_FB(μμ) = 0.0161, close to LEP's measured 0.
 
 **Median χ²/ndf against data** (1 = agreement within uncertainties):
 
-| Benchmark (measurements cited in Rounds 3–4) | SMLab LO (PYTHIA 8 Monash) | PYTHIA 8 direct | Herwig 7.3 | Sherpa 3.0 | SMLab best |
+| Benchmark (measurements cited in Rounds 3–4) | Hadronica LO (PYTHIA 8 Monash) | PYTHIA 8 direct | Herwig 7.3 | Sherpa 3.0 | Hadronica best |
 |---|---|---|---|---|---|
 | ALEPH event shapes, 91.2 GeV | **2.48** | 2.47 | 19.48 † | 4.57 | 2.48 |
 | ATLAS minimum bias, 13 TeV | 36.3 | 36.7 | **7.10** | not comparable ‡ | 36.3 |
@@ -462,6 +462,6 @@ A build artefact cannot be ruled out.
 
 **What the comparison shows:**
 
-- **Like for like at leading order,** SMLab's PYTHIA 8 matches or beats Herwig 7.3 and Sherpa 3.0 on every benchmark except minimum bias.
-- **With its NLO samples** (MC@NLO, MadSpin, FxFx and the SMLab tune), SMLab is clearly best on Z pT and t t̄.
-- **Minimum bias is SMLab's real weakness.** Herwig's model fits the 13 TeV charged-particle data far better (7.1 against 36). PYTHIA's Monash tune overshoots the multiplicity by 9 %, and SMLab offers no alternative there.
+- **Like for like at leading order,** Hadronica's PYTHIA 8 matches or beats Herwig 7.3 and Sherpa 3.0 on every benchmark except minimum bias.
+- **With its NLO samples** (MC@NLO, MadSpin, FxFx and the Hadronica tune), Hadronica is clearly best on Z pT and t t̄.
+- **Minimum bias is Hadronica's real weakness.** Herwig's model fits the 13 TeV charged-particle data far better (7.1 against 36). PYTHIA's Monash tune overshoots the multiplicity by 9 %, and Hadronica offers no alternative there.

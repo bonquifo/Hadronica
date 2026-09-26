@@ -17,7 +17,7 @@ The Windows executable is attached to the [latest release](https://github.com/bo
 
 ```
 pip install -r requirements.txt
-python run_smlab.py
+python run_hadronica.py
 ```
 
 Research mode needs WSL with Ubuntu. The one-time setup installs PYTHIA, Delphes, Rivet, LHAPDF and MadGraph into micromamba environments (no sudo):
@@ -38,7 +38,7 @@ The suite covers the physics engine, the UI, the executable, and (when WSL is se
 
 | Path | Contents |
 |---|---|
-| `smlab/` | The application: engine, processes, decays, detector view, Methods text |
+| `hadronica/` | The application: engine, processes, decays, detector view, Methods text |
 | `hep/` | Research-mode worker, Delphes bridge, Rivet validation, MadGraph scripts, shower tune |
 | `hep/compare/` | Comparisons with MadGraph, PYTHIA run directly, Herwig and Sherpa; `build_report.py` builds the page in `docs/` |
 | `tests/` | Windows tests; `tests/hep/` runs inside WSL |

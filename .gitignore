@@ -3,5 +3,5 @@ __pycache__/
 build/
 dist/
 *.spec
-smlab-error.log
+hadronica-error.log
 tests/frame_*.png

@@ -45,7 +45,7 @@ def card_for(beams: str, sqrt_s: float) -> tuple[str, str]:
     return os.path.join(CARD_DIR, name), label
 
 
-CACHE_DIR = os.path.join(os.path.expanduser("~"), "smlab-cache")
+CACHE_DIR = os.path.join(os.path.expanduser("~"), "hadronica-cache")
 PILEUP_LIBRARY_EVENTS = 5000
 
 
@@ -65,7 +65,7 @@ def pileup_library(sqrt_s: float) -> str:
 
     worker = Worker()
     worker.init({"beams": "pp", "process": "pp_minbias", "sqrt_s": sqrt_s, "seed": 20260923, "decays": "generator"})
-    with tempfile.TemporaryDirectory(prefix="smlab-minbias-") as work:
+    with tempfile.TemporaryDirectory(prefix="hadronica-minbias-") as work:
         source = os.path.join(work, "minbias.hepmc2")
         with hep.io.WriterAsciiHepMC2(source) as writer:
             done = 0
@@ -98,7 +98,7 @@ def pileup_card(mean_pileup: float, library: str, work: str) -> str:
         if old not in text:
             raise RuntimeError(f"unexpected CMS pileup card: missing '{old}'")
         text = text.replace(old, new)
-    path = os.path.join(work, "delphes_card_CMS_PileUp_smlab.tcl")
+    path = os.path.join(work, "delphes_card_CMS_PileUp_hadronica.tcl")
     with open(path, "w", encoding="utf-8") as handle:
         handle.write(text)
     return path
@@ -222,7 +222,7 @@ def simulate(events: list[dict], beams: str, sqrt_s: float, pileup: float = 0.0)
     import uproot
 
     card, label = card_for(beams, sqrt_s)
-    with tempfile.TemporaryDirectory(prefix="smlab-delphes-") as work:
+    with tempfile.TemporaryDirectory(prefix="hadronica-delphes-") as work:
         if beams == "pp" and pileup > 0.0:
             card = pileup_card(pileup, pileup_library(sqrt_s), work)
             label = f"CMS (Delphes), mean pileup μ = {pileup:g}"

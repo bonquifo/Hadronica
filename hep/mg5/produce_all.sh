@@ -5,10 +5,10 @@ set -uo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 while read -r proc energy events; do
     [ -z "$proc" ] && continue
-    if [ -f "$HOME/smlab-cache/nlo/${proc}_${energy}/info.json" ]; then
+    if [ -f "$HOME/hadronica-cache/nlo/${proc}_${energy}/info.json" ]; then
         echo "have ${proc}_${energy}"; continue
     fi
-    rm -rf "$HOME/smlab-cache/nlo/${proc}_${energy}" "$HOME/smlab-cache/nlo/${proc}_${energy}.mg5"
+    rm -rf "$HOME/hadronica-cache/nlo/${proc}_${energy}" "$HOME/hadronica-cache/nlo/${proc}_${energy}.mg5"
     echo "generating ${proc}_${energy} (${events} events)"
     bash "$HERE/generate_nlo.sh" "$proc" "$energy" "$events" | tail -1
 done <<LIST

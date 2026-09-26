@@ -43,8 +43,8 @@ BEST = {"lo": "same as LO", "fxfx_tuned": "NLO FxFx + Hadronica tune", "ms_tuned
 FLAGS = {("lep_z_hadrons", "herwig"): "unconfirmed", ("lhc_minbias", "sherpa"): "not comparable"}
 
 # Chart rows: (key, {series: value or None}).
-series = [("smlab_lo", "Hadronica LO", "lo"), ("herwig", "Herwig 7.3", "hw"), ("sherpa", "Sherpa 3.0", "sh"),
-          ("smlab_best", "Hadronica best", "best")]
+series = [("hadronica_lo", "Hadronica LO", "lo"), ("herwig", "Herwig 7.3", "hw"), ("sherpa", "Sherpa 3.0", "sh"),
+          ("hadronica_best", "Hadronica best", "best")]
 chart_rows = []
 for key, row in table.items():
     values = {}
@@ -71,7 +71,7 @@ def cell(key, field):
     flag = FLAGS.get((key, field))
     if flag == "not comparable":
         return '<td class="num muted">n/c <sup>‡</sup></td>'
-    best = min(x for x in (row["smlab_lo"], row["herwig"], row["sherpa"] if FLAGS.get((key, "sherpa")) is None else 1e9)
+    best = min(x for x in (row["hadronica_lo"], row["herwig"], row["sherpa"] if FLAGS.get((key, "sherpa")) is None else 1e9)
                if x is not None)
     cls = "num" + (" win" if v is not None and abs(v - best) < 1e-9 else "")
     mark = " <sup>†</sup>" if flag == "unconfirmed" else ""
@@ -80,8 +80,8 @@ def cell(key, field):
 
 result_rows = "\n".join(
     f"""<tr><th scope="row"><span class="bench">{html.escape(NAMES[k][0])}</span><span class="sub">{html.escape(NAMES[k][1])}; <a href="https://inspirehep.net/literature/{REFS[k][1]}">{html.escape(REFS[k][0])}</a></span></th>
-{cell(k, 'smlab_lo')}{cell(k, 'herwig')}{cell(k, 'sherpa')}
-<td class="num best">{fmt(r['smlab_best'])}<span class="sub">{html.escape(BEST.get(r['smlab_best_variant'], r['smlab_best_variant']))}</span></td></tr>"""
+{cell(k, 'hadronica_lo')}{cell(k, 'herwig')}{cell(k, 'sherpa')}
+<td class="num best">{fmt(r['hadronica_best'])}<span class="sub">{html.escape(BEST.get(r['hadronica_best_variant'], r['hadronica_best_variant']))}</span></td></tr>"""
     for k, r in table.items())
 
 PROC = {"ff13": "e⁺e⁻ → μ⁺μ⁻", "ff15": "e⁺e⁻ → τ⁺τ⁻", "ff2": "e⁺e⁻ → uū", "ff1": "e⁺e⁻ → dd̄", "ff5": "e⁺e⁻ → bb̄",
@@ -94,10 +94,10 @@ mg_rows = "\n".join(
 afb = [r for r in mg["rows"] if "madgraph_afb" in r]
 afb_rows = "\n".join(
     f"""<tr><td class="num">{r['sqrt_s']:.1f}</td><td class="num">{r['madgraph_afb']:.4f} ± {r['madgraph_afb_err']:.4f}</td>
-<td class="num">{r['smlab_matched_afb']:.4f}</td><td class="num">{r['smlab_shipped_afb']:.4f}</td></tr>""" for r in afb)
+<td class="num">{r['hadronica_matched_afb']:.4f}</td><td class="num">{r['hadronica_shipped_afb']:.4f}</td></tr>""" for r in afb)
 direct_rows = "\n".join(
-    f"""<tr><td>{NAMES[k][0]}</td><td class="num">{fmt(table[k]['smlab_lo'])}</td><td class="num">{fmt(table[k]['pythia_direct'])}</td>
-<td class="num">{v['median_smlab_vs_direct']:.2f}</td></tr>""" for k, v in direct.items())
+    f"""<tr><td>{NAMES[k][0]}</td><td class="num">{fmt(table[k]['hadronica_lo'])}</td><td class="num">{fmt(table[k]['pythia_direct'])}</td>
+<td class="num">{v['median_hadronica_vs_direct']:.2f}</td></tr>""" for k, v in direct.items())
 
 page = f"""<!doctype html>
 <html lang="en">
@@ -109,20 +109,20 @@ page = f"""<!doctype html>
 <style>
 :root {{
   --ground: #f5f7fa; --panel: #ffffff; --ink: #17212d; --muted: #5a6677; --rule: #d9dfe7; --soft: #eef2f7;
-  --smlab: #2d6cdf; --best: #0f7a5c; --hw: #b8691f; --sh: #7b57a8; --warn: #9a5b00; --good-bg: #e3f3ec;
+  --hadronica: #2d6cdf; --best: #0f7a5c; --hw: #b8691f; --sh: #7b57a8; --warn: #9a5b00; --good-bg: #e3f3ec;
   --grid: #d3dae4;
 }}
 @media (prefers-color-scheme: dark) {{
   :root:not([data-theme="light"]) {{
     color-scheme: dark;
     --ground: #0e131b; --panel: #151c27; --ink: #e5eaf1; --muted: #9aa6b6; --rule: #2a3444; --soft: #1b2431;
-    --smlab: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
+    --hadronica: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
   }}
 }}
 :root[data-theme="dark"] {{
   color-scheme: dark;
   --ground: #0e131b; --panel: #151c27; --ink: #e5eaf1; --muted: #9aa6b6; --rule: #2a3444; --soft: #1b2431;
-  --smlab: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
+  --hadronica: #6fa0ff; --best: #3fcf9d; --hw: #e59a50; --sh: #b18ee0; --warn: #f0b75c; --good-bg: #17352b; --grid: #2b3647;
 }}
 body {{ background: var(--ground); color: var(--ink); font: 16px/1.6 "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }}
 .page {{ max-width: 920px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 40px; }}
@@ -147,7 +147,7 @@ th, td {{ padding: 10px 12px; border-bottom: 1px solid var(--rule); text-align: 
 thead th {{ font: 500 12px/1.3 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--soft); }}
 tbody tr:last-child > * {{ border-bottom: 0; }}
 td.num, th.num {{ font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }}
-td.win {{ font-weight: 500; color: var(--smlab); }}
+td.win {{ font-weight: 500; color: var(--hadronica); }}
 td.best {{ color: var(--best); font-weight: 500; }}
 td.good {{ background: var(--good-bg); }}
 td.muted {{ color: var(--muted); }}
@@ -166,7 +166,7 @@ sup {{ color: var(--warn); font-size: 11px; }}
 .chart text {{ fill: var(--muted); font: 12px "IBM Plex Mono", ui-monospace, monospace; }}
 .chart .rowlabel {{ fill: var(--ink); font: 500 13px "IBM Plex Sans", system-ui, sans-serif; }}
 .cols {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }}
-a {{ color: var(--smlab); }}
+a {{ color: var(--hadronica); }}
 code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--soft); padding: 1px 5px; border-radius: 4px; }}
 </style>
 
@@ -187,9 +187,9 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
       <span class="note">largest difference over {mg_summary['points']} cross sections, {mg_summary['processes']} processes, same conventions</span></div>
     <div class="finding pos"><span class="eyebrow">PYTHIA mode vs PYTHIA</span><b>identical</b>
       <span class="note">bit-for-bit the same Rivet histograms for the same events</span></div>
-    <div class="finding pos"><span class="eyebrow">Best on data</span><b>{table['lhc_ttbar']['smlab_best']:.2f}</b>
+    <div class="finding pos"><span class="eyebrow">Best on data</span><b>{table['lhc_ttbar']['hadronica_best']:.2f}</b>
       <span class="note">χ²/ndf on CMS top-pair data with NLO + MadSpin + tune (Herwig {table['lhc_ttbar']['herwig']:.1f}, Sherpa {table['lhc_ttbar']['sherpa']:.1f})</span></div>
-    <div class="finding neg"><span class="eyebrow">Weakest area</span><b>{table['lhc_minbias']['smlab_lo']:.1f}</b>
+    <div class="finding neg"><span class="eyebrow">Weakest area</span><b>{table['lhc_minbias']['hadronica_lo']:.1f}</b>
       <span class="note">χ²/ndf on ATLAS minimum bias, against Herwig's {table['lhc_minbias']['herwig']:.1f}</span></div>
   </div>
 </section>
@@ -201,7 +201,7 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
   better. The first three columns are like for like: leading order with a parton shower (Sherpa also merges extra jets). The last
   column is Hadronica's best mode, which uses next-to-leading-order samples.</p>
   <div class="legend" aria-hidden="true">
-    <span><i class="dot" style="background:var(--smlab)"></i>Hadronica LO (PYTHIA 8)</span>
+    <span><i class="dot" style="background:var(--hadronica)"></i>Hadronica LO (PYTHIA 8)</span>
     <span><i class="dot" style="background:var(--hw)"></i>Herwig 7.3</span>
     <span><i class="dot" style="background:var(--sh)"></i>Sherpa 3.0</span>
     <span><i class="dot" style="background:var(--best)"></i>Hadronica best (NLO)</span>
@@ -335,8 +335,8 @@ code {{ font: 13px "IBM Plex Mono", ui-monospace, monospace; background: var(--s
     el("text", {{ x: x(t), y: H - 10, "text-anchor": "middle" }}, String(t));
   }}
   el("text", {{ x: x(1) + 6, y: top - 14 }}, "χ²/ndf = 1: agreement");
-  const colors = {{ smlab_lo: "--smlab", herwig: "--hw", sherpa: "--sh", smlab_best: "--best" }};
-  const offsets = {{ smlab_lo: -9, herwig: -3, sherpa: 3, smlab_best: 9 }};
+  const colors = {{ hadronica_lo: "--hadronica", herwig: "--hw", sherpa: "--sh", hadronica_best: "--best" }};
+  const offsets = {{ hadronica_lo: -9, herwig: -3, sherpa: 3, hadronica_best: 9 }};
   DATA.rows.forEach((row, i) => {{
     const y = top + i * rowH + rowH / 2;
     el("text", {{ x: 12, y: y + 4, class: "rowlabel" }}, row.label);

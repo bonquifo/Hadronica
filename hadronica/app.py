@@ -9,15 +9,15 @@ import sys
 import numpy as np
 import pygame
 
-from smlab import __version__
-from smlab.constants import B_SOLENOID_T, M_Z, PB_PER_GEV2, format_cross_section, format_energy
-from smlab.generator import PhysicsError, conservation_report, generate_event, isr_table, sigma_pb
-from smlab.guide import GuideCard, GuideContext, collision_card, focus_card, theta_degrees
-from smlab.app_pythia import PythiaMode
-from smlab.engine import PythiaEvent
-from smlab.fullscene import draw_full_event
-from smlab.histogram import Histogram
-from smlab.incoming import (
+from hadronica import __version__
+from hadronica.constants import B_SOLENOID_T, M_Z, PB_PER_GEV2, format_cross_section, format_energy
+from hadronica.generator import PhysicsError, conservation_report, generate_event, isr_table, sigma_pb
+from hadronica.guide import GuideCard, GuideContext, collision_card, focus_card, theta_degrees
+from hadronica.app_pythia import PythiaMode
+from hadronica.engine import PythiaEvent
+from hadronica.fullscene import draw_full_event
+from hadronica.histogram import Histogram
+from hadronica.incoming import (
     COLLIDER_GROUPS,
     beam_for_initial,
     beta_speed,
@@ -27,10 +27,10 @@ from smlab.incoming import (
     incoming_momenta,
     invariant_sqrt_s,
 )
-from smlab.methods import METHODS
-from smlab.particles import species
-from smlab.processes import BEAMS, all_processes, process_by_id
-from smlab.report import (
+from hadronica.methods import METHODS
+from hadronica.particles import species
+from hadronica.processes import BEAMS, all_processes, process_by_id
+from hadronica.report import (
     brief_result,
     energy_timeline,
     english_name,
@@ -40,8 +40,8 @@ from smlab.report import (
     report_cards,
     symbol,
 )
-from smlab.report_sheet import draw_report_sheet
-from smlab.scene import (
+from hadronica.report_sheet import draw_report_sheet
+from hadronica.scene import (
     ECAL_COLOR,
     HCAL_COLOR,
     MUON_COLORS,
@@ -56,7 +56,7 @@ from smlab.scene import (
     draw_static_detector,
     paint_background,
 )
-from smlab.theme import (
+from hadronica.theme import (
     ACCENT,
     ACCENT_HOVER,
     ACCENT_INK,
@@ -81,9 +81,9 @@ from smlab.theme import (
     particle_color,
     shadow,
 )
-from smlab.tracks import curvature_radius
-from smlab.validation_view import ValidationRun, draw_validation, load_results
-from smlab.view3d import Orbit, draw_full_event_3d, draw_view3d
+from hadronica.tracks import curvature_radius
+from hadronica.validation_view import ValidationRun, draw_validation, load_results
+from hadronica.view3d import Orbit, draw_full_event_3d, draw_view3d
 
 # The approach is a viewing aid. Physical times are computed separately.
 APPROACH_SECONDS = 2.2
@@ -212,7 +212,7 @@ class LabApp(PythiaMode):
     # ------------------------------------------------------------------
 
     def _icon(self) -> pygame.Surface:
-        """The window icon (smlab/assets/window_icon.png, drawn by tools/make_icon.py)."""
+        """The window icon (hadronica/assets/window_icon.png, drawn by tools/make_icon.py)."""
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "window_icon.png")
         try:
             return pygame.image.load(path)
@@ -1874,11 +1874,11 @@ def _depth(particles, index: int) -> int:
 def main() -> None:
     args = sys.argv[1:]
     if "--selftest" in args:
-        # Headless end-to-end check of this build (see smlab/selftest.py); writes a JSON report.
-        from smlab.selftest import run_selftest
+        # Headless end-to-end check of this build (see hadronica/selftest.py); writes a JSON report.
+        from hadronica.selftest import run_selftest
 
         after = args[args.index("--selftest") + 1:]
-        report = after[0] if after and not after[0].startswith("--") else "smlab-selftest.json"
+        report = after[0] if after and not after[0].startswith("--") else "hadronica-selftest.json"
         sys.exit(run_selftest(report))
     try:
         app = LabApp()
@@ -1897,7 +1897,7 @@ def _report_crash(exc: BaseException) -> None:
 
     text = traceback.format_exc()
     try:
-        path = "smlab-error.log"
+        path = "hadronica-error.log"
         with open(path, "w", encoding="utf-8") as handle:
             handle.write(text)
     except OSError:

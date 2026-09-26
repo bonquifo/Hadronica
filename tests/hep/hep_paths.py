@@ -5,8 +5,8 @@ import os
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-NLO_DIR = os.path.expanduser("~/smlab-cache/nlo")
-MG5_ENV = os.path.expanduser("~/micromamba/envs/smlab-mg5")
+NLO_DIR = os.path.expanduser("~/hadronica-cache/nlo")
+MG5_ENV = os.path.expanduser("~/micromamba/envs/hadronica-mg5")
 
 
 def sample_path(name: str) -> str:

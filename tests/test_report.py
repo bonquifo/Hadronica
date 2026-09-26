@@ -6,8 +6,8 @@ import math
 
 import pytest
 
-from smlab.app import APPROACH_SECONDS, LabApp
-from smlab.constants import (
+from hadronica.app import APPROACH_SECONDS, LabApp
+from hadronica.constants import (
     C_M_PER_S,
     C_TAU_MU_M,
     GAMMA_H,
@@ -17,10 +17,10 @@ from smlab.constants import (
     M_Z,
     TAU_PI0_S,
 )
-from smlab.generator import generate_event
-from smlab.guide import collision_card
-from smlab.processes import BEAMS, process_by_id
-from smlab.report import (
+from hadronica.generator import generate_event
+from hadronica.guide import collision_card
+from hadronica.processes import BEAMS, process_by_id
+from hadronica.report import (
     generated_summary,
     lifetime_kind,
     mean_flight_m,

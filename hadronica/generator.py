@@ -7,18 +7,18 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from smlab.constants import ALPHA, GAMMA_Z, M_Z, PB_PER_GEV2
-from smlab.decays import decay_once
-from smlab.kinematics import (
+from hadronica.constants import ALPHA, GAMMA_Z, M_Z, PB_PER_GEV2
+from hadronica.decays import decay_once
+from hadronica.kinematics import (
     isr_exponent,
     isr_weight,
     recoil_against_photon,
     two_body_cm,
     two_body_momentum,
 )
-from smlab.lorentz import FourVector, boost_from_rest
-from smlab.particles import is_quark, species
-from smlab.processes import BEAMS, BeamMode, Process
+from hadronica.lorentz import FourVector, boost_from_rest
+from hadronica.particles import is_quark, species
+from hadronica.processes import BEAMS, BeamMode, Process
 
 
 @dataclass(slots=True)

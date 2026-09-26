@@ -2,6 +2,8 @@ import os
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
+# Tests (and the programs they start) never ask GitHub for updates.
+os.environ["HADRONICA_NO_UPDATE_CHECK"] = "1"
 
 # tests/hep runs inside WSL with the hadronica-hep environment (PYTHIA, pyhepmc, Delphes);
 # on Windows, tests/test_wsl_suite.py runs it there instead of collecting it here.

@@ -145,6 +145,7 @@ class SelfTest:
 def run_selftest(report_path: str) -> int:
     os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
     os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
+    from hadronica import __version__
     from hadronica.app import LabApp
 
     app = LabApp(size=(1480, 900), headless=True, seed=11)
@@ -152,6 +153,7 @@ def run_selftest(report_path: str) -> int:
     passed, seconds = test.run()
     report = {
         "passed": passed,
+        "version": __version__,
         "seconds": round(seconds, 1),
         "frozen": bool(getattr(sys, "frozen", False)),
         "executable": sys.executable,

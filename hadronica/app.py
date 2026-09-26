@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import os
 import sys
+import time
 
 import numpy as np
 import pygame
@@ -82,6 +83,7 @@ from hadronica.theme import (
     shadow,
 )
 from hadronica.tracks import curvature_radius
+from hadronica.updater import Updater, cleanup_after_update, notes_excerpt, run_cli_update
 from hadronica.validation_view import ValidationRun, draw_validation, load_results
 from hadronica.view3d import Orbit, draw_full_event_3d, draw_view3d
 
@@ -178,6 +180,9 @@ class LabApp(PythiaMode):
         self.show_methods = False
         self.show_report = False
         self.show_validation = False
+        # Update checks (hadronica/updater.py); None in tests and headless use.
+        self.updater: Updater | None = None
+        self.show_update = False
         self.validation_data = None
         self.validation_path = ""
         self.validation_selected = None
@@ -399,9 +404,32 @@ class LabApp(PythiaMode):
                     return
                 self._handle(event)
             self._advance_batch()
+            self._poll_update()
             self.anim += dt
             self.draw()
             pygame.display.flip()
+
+    def _poll_update(self) -> None:
+        """Once a clicked update has downloaded and verified, install it and restart into it."""
+        if self.updater is not None and self.updater.status == "ready":
+            if self.updater.install_and_restart():
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
+
+    def _update_action(self, action: str) -> None:
+        u = self.updater
+        if action == "close-update":
+            self.show_update = False
+        elif action == "upd-install":
+            u.download_in_background()
+        elif action == "upd-page":
+            u.open_release_page()
+        elif action == "upd-skip":
+            u.skip()
+            self.show_update = False
+        elif action == "upd-check":
+            u.check_in_background()
+        elif action == "upd-auto":
+            u.set_auto_check(not u.auto_check)
 
     def _open_validation(self) -> None:
         self.validation_data, self.validation_path = load_results()
@@ -481,7 +509,9 @@ class LabApp(PythiaMode):
                 self.energy_buffer += event.unicode
             return
         if event.key == pygame.K_ESCAPE:
-            if self.show_validation:
+            if self.show_update:
+                self.show_update = False
+            elif self.show_validation:
                 self.show_validation = False
             elif self.show_report:
                 self.show_report = False
@@ -558,6 +588,17 @@ class LabApp(PythiaMode):
             for rect, action, _payload in reversed(self.hot):
                 if action == "close-methods" and rect.collidepoint(pos):
                     self.show_methods = False
+            return
+        if self.show_update:
+            for rect, action, _payload in reversed(self.hot):
+                if not rect.collidepoint(pos):
+                    continue
+                if action.startswith("upd-") or action == "close-update":
+                    self._update_action(action)
+                    return
+                if action == "update-panel":
+                    return
+            self.show_update = False
             return
         if self.show_validation:
             for rect, action, payload in reversed(self.hot):
@@ -642,6 +683,8 @@ class LabApp(PythiaMode):
             self.scroll_methods = 0
         elif action == "validation":
             self._open_validation()
+        elif action == "update" and self.updater is not None:
+            self.show_update = True
         elif action == "report":
             if self.event is not None:
                 self.show_report = True
@@ -751,6 +794,8 @@ class LabApp(PythiaMode):
             self._validation_was_running = self.validation_run.running
             panel = self._modal_frame(1220, 780, "Validation against published data", "close-validation")
             draw_validation(self, panel)
+        if self.show_update and self.updater is not None:
+            self._draw_update()
 
     # ------------------------------------------------------------------
     # Small widgets
@@ -837,7 +882,7 @@ class LabApp(PythiaMode):
         pygame.draw.circle(self.screen, TEXT, knob, 8 if hover else 7)
         self._hit(rect.inflate(0, 14), action)
 
-    def _switch(self, rect: pygame.Rect, label: str, value: bool, field: str) -> None:
+    def _switch(self, rect: pygame.Rect, label: str, value: bool, field: str, action: str = "toggle") -> None:
         hover = self._hovered(rect)
         if hover:
             pygame.draw.rect(self.screen, SURFACE_2, rect, border_radius=8)
@@ -846,7 +891,7 @@ class LabApp(PythiaMode):
         pygame.draw.rect(self.screen, ACCENT if value else SURFACE_3, track, border_radius=11)
         knob_x = track.right - 11 if value else track.x + 11
         pygame.draw.circle(self.screen, ACCENT_INK if value else TEXT_2, (knob_x, track.centery), 8)
-        self._hit(rect, "toggle", field)
+        self._hit(rect, action, field)
 
     def _step_header(self, x: int, y: int, width: int, number: str, title: str, detail: str = "") -> int:
         badge = pygame.Rect(x, y, 22, 22)
@@ -924,13 +969,42 @@ class LabApp(PythiaMode):
             self.screen.blit(key_image, key_image.get_rect(center=box.center))
             label = self._blit("small", text, TEXT_3, (box.right + 6, rect.centery), "midleft")
             x = label.right + 16
-        right = f"Hadronica {__version__}"
+        prefix = ""
         if self.event is not None:
             count = self.py_event_count if self.pythia_mode else self.counter
-            right = f"event {count}   ·   seed {self.event.seed}   ·   " + right
+            prefix = f"event {count}   ·   seed {self.event.seed}   ·   "
         if self.batch_left:
-            right = f"running {self.batch_total - self.batch_left}/{self.batch_total}   ·   " + right
-        self._blit("small", right, TEXT_3, (rect.right - 14, rect.centery), "midright")
+            prefix = f"running {self.batch_total - self.batch_left}/{self.batch_total}   ·   " + prefix
+        # The version opens the update dialog; a newer release adds a pill beside it.
+        version = self._blit("small", f"Hadronica {__version__}", TEXT_2 if self.updater else TEXT_3,
+                             (rect.right - 14, rect.centery), "midright")
+        edge = version.x
+        if self.updater is not None:
+            self._hit(version.inflate(10, 10), "update")
+            edge = self._update_pill(edge - 12, rect.centery, x + 12)
+        if prefix:
+            self._blit("small", prefix, TEXT_3, (edge, rect.centery), "midright")
+
+    def _update_pill(self, right: int, cy: int, limit: int) -> int:
+        """Draw "Update available" at the status bar's right end; returns the new left edge."""
+        u = self.updater
+        if u.status == "available":
+            label = f"Update available: {u.release.version}"
+        elif u.status in ("downloading", "ready"):
+            label = f"Updating… {int(u.progress * 100)} %"
+        else:
+            return right + 12
+        width = self.text.size("caption", label)[0] + 30
+        if right - width < limit:
+            return right + 12
+        pill = pygame.Rect(right - width, cy - 11, width, 22)
+        hover = self._hovered(pill)
+        pygame.draw.rect(self.screen, ACCENT_SOFT if not hover else SURFACE_3, pill, border_radius=11)
+        pygame.draw.rect(self.screen, ACCENT, pill, 1, border_radius=11)
+        pygame.draw.circle(self.screen, GOOD, (pill.x + 12, cy), 4)
+        self._blit("caption", label, TEXT, (pill.x + 21, cy), "midleft")
+        self._hit(pill, "update")
+        return pill.x
 
     # ------------------------------------------------------------------
     # Left panel: setup
@@ -1826,6 +1900,80 @@ class LabApp(PythiaMode):
         close = draw_report_sheet(self.screen, self.fonts, self.event, timeline)
         self.hot.append((close, "close-report", None))
 
+    def _draw_update(self) -> None:
+        u = self.updater
+        release, status = u.release, u.status
+        offering = status in ("available", "downloading", "ready") and release is not None
+        panel = self._modal_frame(600, 470 if offering else 320, "Updates", "close-update")
+        self.hot.insert(0, (panel, "update-panel", None))
+        x, w = panel.x + 24, panel.w - 48
+        y = panel.y + 70
+
+        def para(text: str, color=TEXT_2, key: str = "body") -> None:
+            nonlocal y
+            y = self._wrap_block(x, y, w, text, key, color, 21) + 8
+
+        if status == "checking":
+            para("Checking GitHub for a newer release…", TEXT)
+        elif offering:
+            self._blit("h2", f"Hadronica {release.version} is available", TEXT, (x, y))
+            y += 30
+            para(f"You have {u.current}.", TEXT_3, "small")
+            notes = notes_excerpt(release.notes, 6)
+            if notes:
+                box = pygame.Rect(x, y, w, 16 + 20 * len(notes))
+                pygame.draw.rect(self.screen, SURFACE_2, box, border_radius=10)
+                for index, line in enumerate(notes):
+                    self._blit("small", self.text.fit("small", line, w - 24), TEXT_2, (x + 12, y + 8 + 20 * index))
+                y = box.bottom + 12
+            if status == "downloading":
+                total = release.exe_size or 0
+                done = f"{u.received / 1e6:.1f} of {total / 1e6:.1f} MB" if total else f"{u.received / 1e6:.1f} MB"
+                para(f"Downloading and verifying… {int(u.progress * 100)} %  ({done})", TEXT)
+                track = pygame.Rect(x, y, w, 8)
+                pygame.draw.rect(self.screen, SURFACE_3, track, border_radius=4)
+                pygame.draw.rect(self.screen, ACCENT, (track.x, track.y, max(8, int(track.w * u.progress)), 8),
+                                 border_radius=4)
+                y += 22
+            elif status == "ready":
+                para("Installing and restarting…", TEXT)
+            elif not u.exe_path:
+                para("Hadronica is running from source here: update with git pull, or get the new executable "
+                     "from the release page.", TEXT_3, "small")
+            elif not release.installable:
+                para("This release has no verified executable attached; download it from the release page.",
+                     TEXT_3, "small")
+            else:
+                para("The new version downloads in the background, is checked against its published SHA-256 "
+                     "checksum, replaces this program, and starts. Your saved results are kept.", TEXT_3, "small")
+        elif status == "error":
+            para(u.message, BAD)
+            para(f"You have Hadronica {u.current}.", TEXT_2)
+        elif status == "current" and release is not None:
+            para(f"Hadronica {u.current} is the latest release.", TEXT)
+        else:
+            para(f"You have Hadronica {u.current}.", TEXT)
+        if u.checked_at and status not in ("checking", "downloading", "ready"):
+            para("Last checked " + time.strftime("%d %b %Y, %H:%M", time.localtime(u.checked_at)) + ".",
+                 TEXT_3, "small")
+
+        switch = pygame.Rect(x - 8, panel.bottom - 118, w + 16, 36)
+        self._switch(switch, "Check for updates automatically (once a day)", u.auto_check, "auto", "upd-auto")
+        row_y = panel.bottom - 66
+        buttons = []
+        if status == "available" and u.can_self_update:
+            buttons = [("Update and restart", "upd-install", "primary"), ("Release notes", "upd-page", "ghost"),
+                       ("Skip this version", "upd-skip", "ghost")]
+        elif status == "available":
+            buttons = [("Open release page", "upd-page", "primary"), ("Skip this version", "upd-skip", "ghost")]
+        elif status in ("current", "idle", "error"):
+            buttons = [("Check now", "upd-check", "primary"), ("Release page", "upd-page", "ghost")]
+        bx = x
+        for label, action, kind in buttons:
+            width = self.text.size("h2" if kind == "primary" else "small", label)[0] + 40
+            self._button(pygame.Rect(bx, row_y, width, 40), label, action, kind=kind)
+            bx += width + 10
+
     def _draw_methods(self) -> None:
         panel = self._modal_frame(820, 720, "Methods & sources", "close-methods")
         body = pygame.Rect(panel.x + 28, panel.y + 66, panel.w - 56, panel.h - 84)
@@ -1873,6 +2021,13 @@ def _depth(particles, index: int) -> int:
 
 def main() -> None:
     args = sys.argv[1:]
+    cleanup_after_update()  # the previous executable, left behind by an update
+    if "--update" in args:
+        # Update without the window (see hadronica/updater.py); writes a JSON report.
+        after = args[args.index("--update") + 1:]
+        then = after[after.index("--then") + 1:] if "--then" in after else []
+        report = after[0] if after and not after[0].startswith("--") else "hadronica-update.json"
+        sys.exit(run_cli_update(report, then))
     if "--selftest" in args:
         # Headless end-to-end check of this build (see hadronica/selftest.py); writes a JSON report.
         from hadronica.selftest import run_selftest
@@ -1882,6 +2037,8 @@ def main() -> None:
         sys.exit(run_selftest(report))
     try:
         app = LabApp()
+        app.updater = Updater()
+        app.updater.start_background_check()
         if "--pythia" in sys.argv[1:]:
             app._activate("engine", "pythia", (0, 0))
         app.run()
